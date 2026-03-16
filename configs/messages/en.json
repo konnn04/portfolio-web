@@ -39,5 +39,19 @@
     "contributors": "Contributors",
     "joined": "Joined",
     "visit_website": "Visit Website"
+  },
+  "about": {
+    "title": "About Me",
+    "description": "This content will be added later. Thanks for your interest!"
+  },
+  "github": {
+    "title": "GitHub Activity",
+    "description": "My open-source contributions and development statistics.",
+    "followers": "Followers",
+    "repositories": "Repositories",
+    "total_commits": "Total Commits",
+    "stats": "Statistics",
+    "top_lang": "Top Languages",
+    "my_stats": "My Stats"
   }
 }

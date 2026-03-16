@@ -39,5 +39,19 @@
     "contributors": "Đóng góp",
     "joined": "Tham gia",
     "visit_website": "Truy cập trang web"
+  },
+  "about": {
+    "title": "Về Tôi",
+    "description": "Nội dung này sẽ được cập nhật sau. Cảm ơn bạn đã quan tâm!"
+  },
+  "github": {
+    "title": "Hoạt Động GitHub",
+    "description": "Thống kê đóng góp mã nguồn mở và hoạt động phát triển của tôi.",
+    "followers": "Người theo dõi",
+    "repositories": "Kho lưu trữ",
+    "total_commits": "Tổng số Commit",
+    "stats": "Thống kê",
+    "top_lang": "Ngôn ngữ lập trình",
+    "my_stats": "Thống kê số liệu"
   }
 }
