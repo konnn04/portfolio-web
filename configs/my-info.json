@@ -1,0 +1,37 @@
+{
+    "profile": {
+        "firstName": "Trieu",
+        "middleName": "Thanh",
+        "lastName": "Nguyen",
+        "city": "Ho Chi Minh",
+        "role": "Fullstack Developer",
+        "country": "Vietnam",
+        "discordDataUrl": "https://api.lanyard.rest/v1/users/732157441889927239",
+        "bio": {
+            "vi": "Là một lập trình viên chuyên Fullstack, tôi đang học hỏi thêm từng ngày...",
+            "en": "As a Fullstack developer, I am constantly learning and growing..."
+        },
+        "socials": {
+            "github": {
+                "href": "https://github.com/konnn04",
+                "label": "konnn04"
+            },
+            "linkedin": {
+                "href": "https://www.linkedin.com/in/konnn04/",
+                "label": "Trieu Thanh Nguyen"
+            },
+            "facebook": {
+                "href": "https://www.facebook.com/konnn04",
+                "label": "konnn04"
+            },
+            "mail": {
+                "href": "mailto:konnn1011.work@gmail.com",
+                "label": "konnn1011.work@gmail.com"
+            },
+            "youtube": {
+                "href": "https://www.youtube.com/@konnn04",
+                "label": "konnn04"
+            }
+        }
+    }
+}

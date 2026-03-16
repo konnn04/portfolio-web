@@ -1,0 +1,43 @@
+{
+  "nav": {
+    "home": "Home",
+    "project": "Project",
+    "blogs": "Blogs",
+    "about": "About me",
+    "view_projects": "View Projects",
+    "read_blogs": "Read Blogs"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "hero": {
+    "greeting": "Hello!",
+    "role": "I'm a {role}",
+    "location": "Based in {city}, {country}"
+  },
+  "blogs": {
+    "title": "Blog Insights",
+    "description": "Thoughts, learnings, and tutorials on web development, software engineering, and more.",
+    "search_placeholder": "Search articles...",
+    "search_button": "Search",
+    "sort_by": "Sort by",
+    "sort_newest": "Newest First",
+    "sort_oldest": "Oldest First",
+    "sort_name_asc": "Name (A-Z)",
+    "sort_name_desc": "Name (Z-A)",
+    "read_more": "Read more",
+    "no_posts_title": "No posts found",
+    "no_posts_desc": "We couldn't find any posts matching your search criteria."
+  },
+  "projects": {
+    "title": "My Projects",
+    "description": "A showcase of projects I've built or contributed to.",
+    "technologies": "Technologies",
+    "languages": "Languages",
+    "contributors": "Contributors",
+    "joined": "Joined",
+    "visit_website": "Visit Website"
+  }
+}

@@ -1,0 +1,169 @@
+[
+    {
+        "title": "Discord bot",
+        "slug": "discord-bot",
+        "github": "https://github.com/mpc-ou/discord-bot",
+        "website": "https://discord.mpclub.dev/",
+        "images": [
+            "public/projects/discord-bot-001.png",
+            "public/projects/discord-bot-002.png",
+            "public/projects/discord-bot-003.png"
+        ],
+        "description": {
+            "en": "A powerful, full-featured Discord bot with a modern web dashboard. Built for MPC Club with stability, performance, and ease of use in mind.",
+            "vi": "Một bot Discord mạnh mẽ, đầy đủ tính năng với giao diện quản trị web hiện đại. Được xây dựng cho MPC Club với sự ổn định, hiệu suất và dễ sử dụng."
+        },
+        "langs": ["typescript"],
+        "contributors": [
+            "konnn04"
+        ],
+        "tags": [
+            "discord.js",
+            "react",
+            "typescript",
+            "postgresql",
+            "fastify",
+            "shadcn/ui"
+        ],
+        "joinAt": "2025-01-09"
+    },
+    {
+        "title": "MPClub Portfolio Website",
+        "slug": "mpclub-portfolio-website",
+        "github": "https://github.com/mpc-ou/mpc-web",
+        "website": "https://mpclub.dev/",
+        "images": [
+            "public/projects/mpc-web-001.png",
+            "public/projects/mpc-web-002.png",
+            "public/projects/mpc-web-003.png",
+            "public/projects/mpc-web-004.png"
+        ],
+        "description": {
+            "en": "A website for MPC Club, using for introducing MPC Club.",
+            "vi": "Một website cho MPC Club, dùng để giới thiệu về MPC Club."
+        },
+        "langs": ["typescript"],
+        "contributors": [
+            "konnn04",
+            "holedev"
+        ],
+        "tags": [
+            "next.js",
+            "typescript",
+            "supabase",
+            "shadcn/ui"
+        ],
+        "joinAt": "2025-12-05"
+    },
+    {
+        "title": "MPC Extension",
+        "slug": "mpc-extension",
+        "github": "https://github.com/mpc-ou/mpc-extension",
+        "website": "https://j2c.cc/mpc-extension/",
+        "images": [
+            "public/projects/mpc-extension.png"
+        ],
+        "description": {
+            "en": "An extension for browser, serving for HCMOU students to support GPA calculation and other learning tools",
+            "vi": "Một extension cho trình duyệt, phục vụ cho sinh viên HCMOU hỗ trợ tính điểm GPA và các công cụ học tập khác"
+        },
+        "langs": ["typescript"],
+        "contributors": [
+            "konnn04",
+            "holedev",
+            "antiennn",
+            "quythanh"
+        ],
+        "tags": [
+            "wxt",
+            "typescript"
+        ],
+        "joinAt": "2024-03-27"
+    },
+    {
+        "title": "Music fetcher wrapper",
+        "slug": "music-fetcher-wrapper",
+        "github": "https://github.com/Riikon-Team/rikn-music-fetcher-wrapper",
+        "website": "https://www.npmjs.com/package/rikn-music-fetcher",
+        "description": {
+            "en": "Một thư viện tổng hợp các thư viện khác phục vụ cho viêc tải nhạc từ Du-túp và Sờ-Pọt-ti-phai, hỗ trợ các định dạng và lời bài hát, dùng cho Bot discord",
+            "vi": "Một thư viện tổng hợp các thư viện khác phục vụ cho viêc tải nhạc từ Du-túp và Sờ-Pọt-ti-phai, hỗ trợ các định dạng và lời bài hát, dùng cho Bot discord"
+        },
+        "langs": ["typescript"],
+        "contributors": [
+            "konnn04"
+        ],
+        "tags": [
+            "typescript",
+            "npm"
+        ],
+        "joinAt": "2025-10-03"
+    },
+    {
+        "title": "EngTalk AI System",
+        "slug": "engtalk-ai-system",
+        "github": "https://github.com/konnn04/engtalk-ai-system",
+        "website": "",
+        "description": {
+            "en": "A project serving for Research of Science 2024 (University level), developing an application for learning spoken English integrated with AI (only supports speaking)",
+            "vi": "Một dự án phục vụ Nghiên cứu khoa học 2024 cấp trường, phát triển ứng dụng học tiếng anh giao tiếp tích hợp AI (chỉ hỗ trợ speaking)"
+        },
+        "langs": ["typescript", "python"],
+        "contributors": [
+            "konnn04",
+            "leviethaiquan"
+        ],
+        "tags": [
+            "python",
+            "typescript",
+            "django",
+            "flask",
+            "fastapi",
+            "reactnative"
+        ],
+        "joinAt": "2025-02-07"
+    },
+    {
+        "title": "Dev Tab",
+        "slug": "dev-tab",
+        "github": "https://github.com/Riikon-Team/DevTab",
+        "website": "",
+        "description": {
+            "en": "An extension for browser customizing newtab, serving for developers to support productivity",
+            "vi": "Một extension cho trình duyệt tùy chỉnh lại newtab"
+        },
+        "langs": ["typescript"],
+        "contributors": [
+            "konnn04",
+            "Riiichan04"
+        ],
+        "tags": [
+            "typescript",
+            "wxt",
+            "react"
+        ],
+        "joinAt": "2025-02-23"
+    },
+    {
+        "title": "Rent House App",
+        "slug": "rent-house-app",
+        "github": "https://github.com/konnn04/rent-house-app",
+        "website": "",
+        "description": {
+            "en": "A mobile application for searching and renting houses (for Modern Programming course)",
+            "vi": "Một ứng dụng mobile phục vụ cho việc tìm kiếm và cho thuê nhà (cho môn Lập trình hiện đại)"
+        },
+        "langs": ["python", "javascript"],
+        "contributors": [
+            "konnn04",
+            "TriMinh07"
+        ],
+        "tags": [
+            "python",
+            "javascript",
+            "django",
+            "reactnative"
+        ],
+        "joinAt": "2025-03-21"
+    }
+]

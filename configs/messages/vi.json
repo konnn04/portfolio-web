@@ -1,0 +1,43 @@
+{
+  "nav": {
+    "home": "Trang chủ",
+    "project": "Dự án",
+    "blogs": "Bài viết",
+    "about": "Về tôi",
+    "view_projects": "Xem Dự Án",
+    "read_blogs": "Đọc Bài Viết"
+  },
+  "theme": {
+    "light": "Sáng",
+    "dark": "Tối",
+    "system": "Hệ thống"
+  },
+  "hero": {
+    "greeting": "Xin chào!",
+    "role": "Tôi là {role}",
+    "location": "Đang ở {city}, {country}"
+  },
+  "blogs": {
+    "title": "Góc Chia Sẻ",
+    "description": "Những suy nghĩ, bài học và hướng dẫn về phát triển web, kỹ thuật phần mềm và nhiều điều khác.",
+    "search_placeholder": "Tìm kiếm bài viết...",
+    "search_button": "Tìm kiếm",
+    "sort_by": "Sắp xếp theo",
+    "sort_newest": "Mới nhất",
+    "sort_oldest": "Cũ nhất",
+    "sort_name_asc": "Tên (A-Z)",
+    "sort_name_desc": "Tên (Z-A)",
+    "read_more": "Đọc tiếp",
+    "no_posts_title": "Không tìm thấy bài viết",
+    "no_posts_desc": "Chúng tôi không tìm thấy bài viết nào phù hợp với tiêu chí tìm kiếm của bạn."
+  },
+  "projects": {
+    "title": "Dự Án Của Tôi",
+    "description": "Tổng hợp các dự án mà tôi đã xây dựng hoặc đóng góp.",
+    "technologies": "Công nghệ",
+    "languages": "Ngôn ngữ",
+    "contributors": "Đóng góp",
+    "joined": "Tham gia",
+    "visit_website": "Truy cập trang web"
+  }
+}
