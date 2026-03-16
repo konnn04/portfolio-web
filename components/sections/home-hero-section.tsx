@@ -58,7 +58,8 @@ export function HeroSection() {
     setIsMounted(true);
 
     if (profile.discordDataUrl) {
-      fetch(profile.discordDataUrl)
+      const fetchUrl = `/api/discord?url=${encodeURIComponent(profile.discordDataUrl)}`;
+      fetch(fetchUrl)
         .then((res) => res.json())
         .then((json) => {
           if (json.success) {
@@ -70,13 +71,14 @@ export function HeroSection() {
     
     const interval = setInterval(() => {
       if (profile.discordDataUrl) {
-        fetch(profile.discordDataUrl)
+        const fetchUrl = `/api/discord?url=${encodeURIComponent(profile.discordDataUrl)}`;
+        fetch(fetchUrl)
           .then((res) => res.json())
           .then((json) => {
             if (json.success) setDiscordData(json.data);
           }).catch(() => {});
       }
-    }, 30000);
+    }, 15000);
     return () => clearInterval(interval);
   }, [profile.discordDataUrl]);
 

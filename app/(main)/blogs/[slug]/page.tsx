@@ -67,7 +67,6 @@ export default async function BlogPostPage({ params }: Props) {
 
   const { title, date, author, image, categories } = post.metadata;
   const imageUrl = image?.startsWith("assets/") ? `/blogs/${slug}/${image}` : image;
-  const postUrl = typeof window !== "undefined" ? window.location.href : ``; 
 
   return (
     <article className="relative min-h-screen pb-20">
@@ -149,7 +148,7 @@ export default async function BlogPostPage({ params }: Props) {
           </ReactMarkdown>
         </div>
 
-        <ShareSticky title={title} url={postUrl} />
+        <ShareSticky title={title} />
 
         <RelatedPosts currentSlug={slug} categories={categories || []} />
       </div>

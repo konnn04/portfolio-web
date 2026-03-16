@@ -48,11 +48,13 @@ export const metadata: Metadata = {
     siteName: siteConfig.name,
     title: `${siteConfig.name} | My Portfolio`,
     description: siteConfig.description,
+    images: [{ url: "/avatar.jpg" }],
   },
   twitter: {
     card: "summary_large_image",
     title: `${siteConfig.name} | My Portfolio`,
     description: siteConfig.description,
+    images: ["/avatar.jpg"],
   },
   robots: {
     index: true,
