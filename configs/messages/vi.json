@@ -42,7 +42,13 @@
   },
   "about": {
     "title": "Về Tôi",
-    "description": "Nội dung này sẽ được cập nhật sau. Cảm ơn bạn đã quan tâm!"
+    "description": "Hành trình, kinh nghiệm và các kỹ năng tôi đã trau dồi.",
+    "education": "Học vấn",
+    "experience": "Kinh nghiệm làm việc",
+    "skills": "Kỹ năng của tôi",
+    "featured_projects": "Dự án Nổi Bật",
+    "view_all_projects": "Xem Tất Cả Dự Án",
+    "present": "Hiện tại"
   },
   "github": {
     "title": "Hoạt Động GitHub",

@@ -1,0 +1,142 @@
+{
+    "profile": {
+        "firstName": "Trieu",
+        "middleName": "Thanh",
+        "lastName": "Nguyen",
+        "role": "Fullstack Developer",
+        "country": "Vietnam",
+        "city": "Ho Chi Minh",
+        "address": "Xuan Hoa Ward",
+        "discordDataUrl": "https://api.lanyard.rest/v1/users/732157441889927239",
+        "bio": {
+            "vi": "Là một lập trình viên chuyên Fullstack, tôi đang học hỏi thêm từng ngày...",
+            "en": "As a Fullstack developer, I am constantly learning and growing..."
+        },
+        "socials": {
+            "github": {
+                "href": "https://github.com/konnn04",
+                "label": "konnn04"
+            },
+            "linkedin": {
+                "href": "https://www.linkedin.com/in/konnn04/",
+                "label": "Trieu Thanh Nguyen"
+            },
+            "facebook": {
+                "href": "https://www.facebook.com/konnn04",
+                "label": "konnn04"
+            },
+            "mail": {
+                "href": "mailto:konnn1011.work@gmail.com",
+                "label": "konnn1011.work@gmail.com"
+            },
+            "youtube": {
+                "href": "https://www.youtube.com/@konnn04",
+                "label": "konnn04"
+            }
+        },
+        "schools": [
+            {
+                "name": {
+                    "vi": "Trường Đại học Mở TP.HCM",
+                    "en": "Ho Chi Minh City Open University"
+                },
+                "majors": [
+                    {
+                        "name": {
+                            "vi": "Công nghệ thông tin",
+                            "en": "Information Technology"
+                        },
+                        "gpa": "3.22",
+                        "startDate": "2022-09",
+                        "endDate": ""
+                    }
+                ],
+                "activities": [
+                    {
+                        "name": {
+                            "vi": "Chủ nhiệm CLB học thuật cấp khoa - MPClub",
+                            "en": "Head of Faculty Academic Club - MPClub"
+                        },
+                        "startDate": "2023-02",
+                        "endDate": "2024-03",
+                        "description": {
+                            "vi": "Quản lý tổ chức sinh viên học thuật cấp khoa, tổ chức nhiều cuộc thi và hoạt động cho thành viên và sinh viên toàn trường",
+                            "en": "Managed the faculty-level academic student organization, organizing many competitions and activities for members and students across the university"
+                        },
+                        "links": [
+                            "https://mpclub.dev"
+                        ]
+                    }
+                ]
+            }
+        ],
+        "publish": [],
+        "experiences":[
+            {
+                "type": "work",
+                "company": {
+                    "vi": "Công ty TNHH Pizitech",
+                    "en": "Pizitech Co., Ltd."
+                },
+                "position": {
+                    "vi": "Thực tập sinh",
+                    "en": "Intern"
+                },
+                "startDate": "2025-10",
+                "endDate": "2026-02",
+                "description": {
+                    "vi": "Tham gia phát triển hệ thống ERP cho doanh nghiệp vừa và nhỏ, tập trung vào quản lý kho và quy trình bán hàng.",
+                    "en": "Participated in the development of an ERP system for SMEs, focusing on inventory management and sales processes."
+                },
+                "links": [
+                    "https://pizitech.com"
+                ]
+            }
+        ],
+        "achievements":[
+            {
+                "name": {
+                    "vi": "Hoàn thành xuất xắc nghiên cứu Khoa học cấp trường 2024",
+                    "en": "Excellent completion of university-level scientific research 2024"
+                },
+                "startDate": "2024-04",
+                "endDate": "2025-03",
+                "description": {
+                    "vi": "Đề tài phát triển ứng dụng học tiếng Anh giao tiếp tích hợp AI (chỉ Speaking) cho việc học, phân tích và đề xuất lộ trình học",
+                    "en": "Research topic: Development of an AI-integrated English speaking learning application for learning, analysis, and personalized learning path recommendations"
+                }
+            }
+        ],
+        "skills": {
+            "lang": ["Typescript", "Python", "PHP", "Golang"],
+            "frameworks": ["Next.js", "React", "React Native", "Fastify", "Django", "Flask", "Laravel", "Gin"],
+            "databases": ["PostgreSQL", "MySQL", "MongoDB", "Redis"],
+            "tools": ["Docker", "Git", "Nginx", "Apache", "Supabase", "Cloudflare"]
+        },
+        "languages": [
+            {
+                "name": {
+                    "vi": "Tiếng Việt",
+                    "en": "Vietnamese"
+                },
+                "level": {
+                    "vi": "Bản ngữ",
+                    "en": "Native"
+                }
+            },
+            {
+                "name": {
+                    "vi": "Tiếng Anh",
+                    "en": "English"
+                },
+                "level": {
+                    "vi": "B1 (Intermediate)",
+                    "en": "B1 (Intermediate)"
+                }
+            }
+        ],
+        "certificates": [
+
+        ]
+    }
+}

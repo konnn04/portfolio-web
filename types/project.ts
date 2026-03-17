@@ -12,4 +12,5 @@ export interface Project {
   contributors: string[];
   tags: string[];
   joinAt: string;
+  pinned?: boolean;
 }
