@@ -246,6 +246,18 @@ export function HeroSection() {
                 </div>
               </div>
             </Link>
+
+            <Link href="/about" className="group relative w-full max-w-64 p-0.5 rounded-2xl bg-linear-to-r from-secondary to-primary overflow-hidden transition-transform hover:scale-[1.03] active:scale-95">
+              <div className="relative flex items-center justify-between bg-background/90 backdrop-blur-md px-5 py-4 rounded-[14px] border border-transparent group-hover:border-primary/50 transition-colors">
+                <div className="flex flex-col text-left w-full mr-2">
+                  <span className="text-lg font-bold text-foreground">{renderT("hero.learn_more")}</span>
+                  <span className="text-xs text-muted-foreground mt-1">Discover my journey</span>
+                </div>
+                <div className="w-8 h-8 rounded-full bg-secondary/30 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </div>
+            </Link>
           </motion.div>
           
         </div>

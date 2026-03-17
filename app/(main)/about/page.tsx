@@ -33,8 +33,8 @@ export default function AboutPage() {
   
   interface School {
     name: Record<string, string>;
-    majors: { name: Record<string, string>; startDate: string; endDate: string }[];
-    activities?: { description: Record<string, string>; links: string[] }[];
+    majors: { name: Record<string, string>; startDate: string; endDate: string; gpa?: string }[];
+    activities?: { name: Record<string, string>; startDate: string; endDate: string; description: Record<string, string>; links?: string[] }[];
   }
 
   interface Exp {
@@ -54,8 +54,15 @@ export default function AboutPage() {
     subtitle: school.majors[0]?.name,
     startDate: school.majors[0]?.startDate,
     endDate: school.majors[0]?.endDate,
-    description: school.activities?.[0]?.description,
-    links: school.activities?.[0]?.links
+    gpa: school.majors[0]?.gpa,
+    activities: school.activities?.map((act, j) => ({
+      id: `act-${i}-${j}`,
+      name: act.name,
+      description: act.description,
+      startDate: act.startDate,
+      endDate: act.endDate,
+      links: act.links
+    }))
   }));
 
   const experienceItems = profile.experiences.map((exp: Exp, i: number) => ({
@@ -87,7 +94,7 @@ export default function AboutPage() {
       <div className="container max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 flex flex-col gap-24">
         
         {/* Timeline Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
+        <div className="flex flex-col gap-20">
           <AboutTimeline items={experienceItems} title={t("about.experience")} icon="work" />
           <AboutTimeline items={educationItems} title={t("about.education")} icon="education" />
         </div>

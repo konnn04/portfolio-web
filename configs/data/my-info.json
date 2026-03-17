@@ -66,12 +66,24 @@
                         "links": [
                             "https://mpclub.dev"
                         ]
+                    },
+                    {
+                        "name": {
+                            "vi": "Hoàn thành xuất xắc nghiên cứu Khoa học cấp trường 2024",
+                            "en": "Excellent completion of university-level scientific research 2024"
+                        },
+                        "startDate": "2024-04",
+                        "endDate": "2025-03",
+                        "description": {
+                            "vi": "Đề tài phát triển ứng dụng học tiếng Anh giao tiếp tích hợp AI (chỉ Speaking) cho việc học, phân tích và đề xuất lộ trình học",
+                            "en": "Research topic: Development of an AI-integrated English speaking learning application for learning, analysis, and personalized learning path recommendations"
+                        }
                     }
                 ]
             }
         ],
         "publish": [],
-        "experiences":[
+        "experiences": [
             {
                 "type": "work",
                 "company": {
@@ -93,25 +105,38 @@
                 ]
             }
         ],
-        "achievements":[
-            {
-                "name": {
-                    "vi": "Hoàn thành xuất xắc nghiên cứu Khoa học cấp trường 2024",
-                    "en": "Excellent completion of university-level scientific research 2024"
-                },
-                "startDate": "2024-04",
-                "endDate": "2025-03",
-                "description": {
-                    "vi": "Đề tài phát triển ứng dụng học tiếng Anh giao tiếp tích hợp AI (chỉ Speaking) cho việc học, phân tích và đề xuất lộ trình học",
-                    "en": "Research topic: Development of an AI-integrated English speaking learning application for learning, analysis, and personalized learning path recommendations"
-                }
-            }
-        ],
+        "achievements": [],
         "skills": {
-            "lang": ["Typescript", "Python", "PHP", "Golang"],
-            "frameworks": ["Next.js", "React", "React Native", "Fastify", "Django", "Flask", "Laravel", "Gin"],
-            "databases": ["PostgreSQL", "MySQL", "MongoDB", "Redis"],
-            "tools": ["Docker", "Git", "Nginx", "Apache", "Supabase", "Cloudflare"]
+            "lang": [
+                "Typescript",
+                "Python",
+                "PHP",
+                "Golang"
+            ],
+            "frameworks": [
+                "Next.js",
+                "React",
+                "React Native",
+                "Fastify",
+                "Django",
+                "Flask",
+                "Laravel",
+                "Gin"
+            ],
+            "databases": [
+                "PostgreSQL",
+                "MySQL",
+                "MongoDB",
+                "Redis"
+            ],
+            "tools": [
+                "Docker",
+                "Git",
+                "Nginx",
+                "Apache",
+                "Supabase",
+                "Cloudflare"
+            ]
         },
         "languages": [
             {
@@ -135,8 +160,6 @@
                 }
             }
         ],
-        "certificates": [
-
-        ]
+        "certificates": []
     }
 }
