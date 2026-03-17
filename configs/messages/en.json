@@ -42,7 +42,13 @@
   },
   "about": {
     "title": "About Me",
-    "description": "This content will be added later. Thanks for your interest!"
+    "description": "Here is my journey, experience, and the skills I have cultivated.",
+    "education": "Education",
+    "experience": "Experience",
+    "skills": "My Skills",
+    "featured_projects": "Featured Projects",
+    "view_all_projects": "View All Projects",
+    "present": "Present"
   },
   "github": {
     "title": "GitHub Activity",

@@ -116,8 +116,8 @@ pnpm run precommit    # Manual post-validation script
 
 Most of the content is data-driven. You can customize the site by editing:
 
-- `configs/my-info.json`: Personal details, socials, and avatar.
-- `configs/my-projects.json`: Projects list and image paths.
+- `configs/data/my-info.json`: Personal details, socials, and avatar.
+- `configs/data/my-projects.json`: Projects list and image paths.
 - `configs/messages/`: Translation strings for all UI elements.
 
 ---

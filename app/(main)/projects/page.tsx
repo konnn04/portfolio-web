@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import projects from "@/configs/my-projects.json";
+import projects from "@/configs/data/my-projects.json";
 import { ProjectCard } from "@/components/projects/project-card";
 import { ProjectDetailModal } from "@/components/projects/project-detail-modal";
 import { useLanguage } from "@/components/providers/providers";

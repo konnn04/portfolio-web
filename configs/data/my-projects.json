@@ -25,7 +25,8 @@
             "fastify",
             "shadcn/ui"
         ],
-        "joinAt": "2025-01-09"
+        "joinAt": "2025-01-09",
+        "pinned": true
     },
     {
         "title": "MPClub Portfolio Website",
@@ -53,7 +54,8 @@
             "supabase",
             "shadcn/ui"
         ],
-        "joinAt": "2025-12-05"
+        "joinAt": "2025-12-05",
+        "pinned": true
     },
     {
         "title": "MPC Extension",
@@ -78,7 +80,8 @@
             "wxt",
             "typescript"
         ],
-        "joinAt": "2024-03-27"
+        "joinAt": "2024-03-27",
+        "pinned": true
     },
     {
         "title": "Music fetcher wrapper",
