@@ -15,7 +15,8 @@
   "hero": {
     "greeting": "Xin chào!",
     "role": "Tôi là {role}",
-    "location": "Đang ở {city}, {country}"
+    "location": "Đang ở {city}, {country}",
+    "learn_more": "Hiểu thêm về tôi"
   },
   "blogs": {
     "title": "Góc Chia Sẻ",
@@ -48,7 +49,8 @@
     "skills": "Kỹ năng của tôi",
     "featured_projects": "Dự án Nổi Bật",
     "view_all_projects": "Xem Tất Cả Dự Án",
-    "present": "Hiện tại"
+    "present": "Hiện tại",
+    "gpa": "Điểm trung bình (GPA)"
   },
   "github": {
     "title": "Hoạt Động GitHub",

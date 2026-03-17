@@ -15,7 +15,8 @@
   "hero": {
     "greeting": "Hello!",
     "role": "I'm a {role}",
-    "location": "Based in {city}, {country}"
+    "location": "Based in {city}, {country}",
+    "learn_more": "Learn more about me :3"
   },
   "blogs": {
     "title": "Blog Insights",
@@ -48,7 +49,8 @@
     "skills": "My Skills",
     "featured_projects": "Featured Projects",
     "view_all_projects": "View All Projects",
-    "present": "Present"
+    "present": "Present",
+    "gpa": "GPA"
   },
   "github": {
     "title": "GitHub Activity",

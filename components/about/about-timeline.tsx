@@ -3,8 +3,18 @@
 import { ScrollReveal } from "@/components/ui/scroll-reveal";
 import { useLanguage } from "@/components/providers/providers";
 import { format, parseISO } from "date-fns";
-import { Calendar, Briefcase, GraduationCap, ArrowUpRight } from "lucide-react";
+import { Calendar, Briefcase, GraduationCap, ArrowUpRight, Award, ChevronRight } from "lucide-react";
 import Link from "next/link";
+import { motion } from "framer-motion";
+
+interface Activity {
+  id: string;
+  name: string | Record<string, string>;
+  description?: string | Record<string, string>;
+  startDate: string;
+  endDate: string;
+  links?: string[];
+}
 
 interface TimelineItem {
   id: string;
@@ -15,6 +25,8 @@ interface TimelineItem {
   endDate: string; // YYYY-MM or empty for present
   description?: string | Record<string, string>;
   links?: string[];
+  gpa?: string;
+  activities?: Activity[];
 }
 
 interface AboutTimelineProps {
@@ -49,7 +61,7 @@ export function AboutTimeline({ items, title, icon }: AboutTimelineProps) {
   const MainIcon = IconMap[icon];
 
   return (
-    <section className="mb-16">
+    <section className="mb-16 w-full">
       <ScrollReveal>
         <div className="flex items-center gap-4 mb-10">
           <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
@@ -71,19 +83,30 @@ export function AboutTimeline({ items, title, icon }: AboutTimelineProps) {
             </ScrollReveal>
 
             {/* Content card */}
-            <ScrollReveal direction="up" delay={idx * 0.15}>
-              <div className="group relative bg-secondary/30 hover:bg-secondary/50 backdrop-blur-sm border rounded-2xl p-6 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+            <ScrollReveal direction="up" delay={idx * 0.15} className="w-full">
+              <motion.div 
+                whileHover={{ y: -5 }}
+                className="group relative bg-secondary/30 hover:bg-secondary/50 backdrop-blur-sm border rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 w-full"
+              >
                 <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-4">
                   <div>
                     <h4 className="text-xl font-bold text-foreground">
                       {getLocalized(item.title)}
                     </h4>
-                    <span className="text-lg font-medium text-primary mt-1 inline-block">
-                      {getLocalized(item.subtitle)}
-                    </span>
+                    <div className="flex flex-wrap items-center gap-3 mt-1">
+                      <span className="text-lg font-medium text-primary inline-block">
+                        {getLocalized(item.subtitle)}
+                      </span>
+                      {item.gpa && (
+                        <div className="flex items-center gap-1.5 bg-accent/20 text-accent font-semibold px-2.5 py-0.5 rounded-full text-sm border border-accent/30">
+                          <Award className="w-4 h-4" />
+                          <span>{t("about.gpa")}: {item.gpa}</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground bg-background/50 border rounded-full px-3 py-1 w-fit h-fit">
-                    <Calendar className="w-4 h-4" />
+                  <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground bg-background/80 border rounded-full px-4 py-1.5 w-fit h-fit shadow-sm">
+                    <Calendar className="w-4 h-4 text-primary" />
                     <span>{formatTimelineDate(item.startDate)} — {formatTimelineDate(item.endDate)}</span>
                   </div>
                 </div>
@@ -102,7 +125,7 @@ export function AboutTimeline({ items, title, icon }: AboutTimelineProps) {
                         href={url} 
                         target="_blank" 
                         rel="noreferrer"
-                        className="inline-flex items-center gap-1.5 text-sm font-medium text-foreground hover:text-primary transition-colors bg-background border px-3 py-1.5 rounded-full"
+                        className="inline-flex items-center gap-1.5 text-sm font-medium text-foreground hover:text-primary hover:bg-primary/10 transition-colors bg-background border px-4 py-1.5 rounded-full shadow-sm"
                       >
                          {new URL(url).hostname}
                          <ArrowUpRight className="w-3.5 h-3.5" />
@@ -110,7 +133,50 @@ export function AboutTimeline({ items, title, icon }: AboutTimelineProps) {
                     ))}
                   </div>
                 )}
-              </div>
+                
+                {/* Nested Activities Timeline */}
+                {item.activities && item.activities.length > 0 && (
+                   <div className="mt-8 pt-6 border-t border-primary/10 space-y-6">
+                      <h5 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-4 ml-1">Activities & Honors</h5>
+                      <div className="relative border-l-2 border-primary/10 ml-4 space-y-8 pb-2">
+                        {item.activities.map((act) => (
+                           <div key={act.id} className="relative pl-6 group/act">
+                              <div className="absolute -left-[7px] top-2 w-3 h-3 rounded-full bg-background border-2 border-primary/50 group-hover/act:bg-primary/50 transition-colors z-10" />
+                              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 mb-2">
+                                <h6 className="text-base font-semibold text-foreground/90 flex items-center gap-2">
+                                  {getLocalized(act.name)}
+                                </h6>
+                                <span className="text-xs font-medium text-muted-foreground whitespace-nowrap bg-background/50 px-2 py-1 rounded-md border">
+                                  {formatTimelineDate(act.startDate)} — {formatTimelineDate(act.endDate)}
+                                </span>
+                              </div>
+                              {act.description && (
+                                <p className="text-sm text-muted-foreground mt-1">
+                                  {getLocalized(act.description)}
+                                </p>
+                              )}
+                              {act.links && act.links.length > 0 && (
+                                <div className="flex flex-wrap gap-2 mt-3">
+                                  {act.links.map((url, i) => (
+                                    <Link 
+                                      key={i} 
+                                      href={url} 
+                                      target="_blank" 
+                                      rel="noreferrer"
+                                      className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-primary transition-colors bg-background/50 border border-primary/10 px-2 py-1 rounded-md"
+                                    >
+                                      {new URL(url).hostname}
+                                      <ChevronRight className="w-3 h-3" />
+                                    </Link>
+                                  ))}
+                                </div>
+                              )}
+                           </div>
+                        ))}
+                      </div>
+                   </div>
+                )}
+              </motion.div>
             </ScrollReveal>
           </div>
         ))}
