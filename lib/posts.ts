@@ -16,13 +16,15 @@ export function parsePost(fileContents: string, folderName?: string): Post | nul
   const contentMatch = fileContents.split(/(<!--\s*Content\s*-->)/i);
   const content = contentMatch.length > 2 ? contentMatch.slice(2).join('').trim() : "";
 
-  const lines = headerRaw.split('\n');
+  const lines = headerRaw.split(/\r?\n/);
   const metadata: Partial<PostMetadata> = {};
 
   for (const line of lines) {
-     const match = line.match(/^\s*-\s*([a-zA-Z0-9_]+)\s*:\s*(.*)$/);
+     const match = line.trim().match(/^\s*-\s*([a-zA-Z0-9_]+)\s*:\s*(.*)$/);
      if (match) {
-        const key = match[1].trim() as keyof PostMetadata;
+        let key = match[1].trim() as string;
+        if (key === 'datetime') key = 'date';
+        
         let valueRaw = match[2].trim();
         
         if (valueRaw.endsWith(',')) valueRaw = valueRaw.slice(0, -1).trim();
@@ -60,20 +62,36 @@ export function parsePost(fileContents: string, folderName?: string): Post | nul
   }
 
   return {
-     metadata: metadata as PostMetadata,
+     metadata: {
+       ...metadata,
+       slug: folderName || metadata.slug || "", // Use folder name as slug
+     } as PostMetadata,
      content,
-     folderName: folderName || metadata.slug || ""
+     folderName: folderName || ""
   };
 }
 
-export function getAllPosts(): Post[] {
+export function getAllPosts(lang?: string): Post[] {
   if (!fs.existsSync(postsDirectory)) return [];
   const dirNames = fs.readdirSync(postsDirectory);
   const posts = dirNames
+    .filter(dirName => !dirName.startsWith("_")) // Skip folders starting with "_"
     .map((dirName) => {
       const fullDir = path.join(postsDirectory, dirName);
       if (fs.statSync(fullDir).isDirectory()) {
-        const fullPath = path.join(fullDir, "content.md");
+        let fullPath = path.join(fullDir, "content.md");
+        const pathLang = path.join(fullDir, `content_${lang}.md`);
+        
+        if (lang && fs.existsSync(pathLang)) {
+            fullPath = pathLang;
+        } else if (!fs.existsSync(fullPath)) {
+            if (fs.existsSync(path.join(fullDir, "content_vi.md"))) {
+                fullPath = path.join(fullDir, "content_vi.md");
+            } else if (fs.existsSync(path.join(fullDir, "content_en.md"))) {
+                fullPath = path.join(fullDir, "content_en.md");
+            }
+        }
+
         if (fs.existsSync(fullPath)) {
             const fileContents = fs.readFileSync(fullPath, "utf8");
             return parsePost(fileContents, dirName);
@@ -86,7 +104,33 @@ export function getAllPosts(): Post[] {
   return posts.sort((a, b) => new Date(b.metadata.date || 0).getTime() - new Date(a.metadata.date || 0).getTime());
 }
 
-export function getPostBySlug(slug: string): Post | null {
-    const posts = getAllPosts();
-    return posts.find(p => p.metadata.slug === slug) || null;
+export function getPostBySlug(slug: string, lang?: string): Post | null {
+  if (!fs.existsSync(postsDirectory)) return null;
+  const dirNames = fs.readdirSync(postsDirectory).filter(dirName => !dirName.startsWith("_"));
+
+  // Match directly by folder name
+  const dirName = dirNames.find(d => d === slug);
+  if (!dirName) return null;
+
+  const fullDir = path.join(postsDirectory, dirName);
+  if (!fs.statSync(fullDir).isDirectory()) return null;
+
+  let fullPath = path.join(fullDir, "content.md");
+  const pathLang = path.join(fullDir, `content_${lang}.md`);
+
+  if (lang && fs.existsSync(pathLang)) {
+    fullPath = pathLang;
+  } else if (!fs.existsSync(fullPath)) {
+    if (fs.existsSync(path.join(fullDir, "content_vi.md"))) {
+      fullPath = path.join(fullDir, "content_vi.md");
+    } else if (fs.existsSync(path.join(fullDir, "content_en.md"))) {
+      fullPath = path.join(fullDir, "content_en.md");
+    }
+  }
+
+  if (fs.existsSync(fullPath)) {
+    const fileContents = fs.readFileSync(fullPath, "utf8");
+    return parsePost(fileContents, dirName);
+  }
+  return null;
 }

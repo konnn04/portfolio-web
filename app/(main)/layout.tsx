@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Roboto_Mono } from "next/font/google";
-import { cookies, headers } from "next/headers"; 
+import { cookies, headers } from "next/headers";
 import "../globals.css";
 
 import { Providers } from "@/components/providers/providers";
@@ -13,7 +13,7 @@ import { siteConfig } from "@/lib/site-config";
 
 const inter = Inter({
   variable: "--font-sans",
-  subsets: ["latin", "vietnamese"], 
+  subsets: ["latin", "vietnamese"],
 });
 
 const robotoMono = Roboto_Mono({
@@ -75,6 +75,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const cookieStore = await cookies();
+
   let lang = cookieStore.get("language")?.value as "en" | "vi" | undefined;
 
   if (!lang) {
@@ -90,12 +91,12 @@ export default async function RootLayout({
       >
         <Providers initialLang={lang}>
           <HeaderProvider>
-          <TooltipProvider>
-            <Header />
-            <main className="flex-1 mt-16 mb-20 md:mb-0">{children}</main>
-            <Footer />
-            <MobileDock />
-          </TooltipProvider>
+            <TooltipProvider>
+              <Header />
+              <main className="flex-1 mt-16 mb-20 md:mb-0">{children}</main>
+              <Footer />
+              <MobileDock />
+            </TooltipProvider>
           </HeaderProvider>
         </Providers>
       </body>

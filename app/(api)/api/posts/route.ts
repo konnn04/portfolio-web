@@ -10,7 +10,13 @@ export async function GET(request: NextRequest) {
   const sortOrder = searchParams.get("sortOrder") || "desc"; // 'asc' | 'desc'
   const category = searchParams.get("category") || "";
 
-  let posts = getAllPosts();
+  let lang = request.cookies.get("language")?.value as "en" | "vi" | undefined;
+  if (!lang) {
+      const acceptLang = request.headers.get("accept-language") || "";
+      lang = acceptLang.includes("vi") ? "vi" : "en";
+  }
+
+  let posts = getAllPosts(lang);
 
   if (query) {
     const lowercaseQuery = query.toLowerCase();

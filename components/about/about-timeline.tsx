@@ -3,7 +3,7 @@
 import { ScrollReveal } from "@/components/ui/scroll-reveal";
 import { useLanguage } from "@/components/providers/providers";
 import { format, parseISO } from "date-fns";
-import { Calendar, Briefcase, GraduationCap, ArrowUpRight, Award, ChevronRight } from "lucide-react";
+import { Calendar, Briefcase, GraduationCap, ArrowUpRight, Award, ChevronRight, FileBadge } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
@@ -18,11 +18,11 @@ interface Activity {
 
 interface TimelineItem {
   id: string;
-  type: "work" | "education";
+  type: "work" | "education" | "certificate";
   title: string | Record<string, string>;
   subtitle: string | Record<string, string>;
   startDate: string; // YYYY-MM
-  endDate: string; // YYYY-MM or empty for present
+  endDate?: string | undefined; // YYYY-MM or empty for present
   description?: string | Record<string, string>;
   links?: string[];
   gpa?: string;
@@ -32,7 +32,7 @@ interface TimelineItem {
 interface AboutTimelineProps {
   items: TimelineItem[];
   title: string;
-  icon: "work" | "education";
+  icon: "work" | "education" | "certificate";
 }
 
 export function AboutTimeline({ items, title, icon }: AboutTimelineProps) {
@@ -44,7 +44,7 @@ export function AboutTimeline({ items, title, icon }: AboutTimelineProps) {
     return field[lang] || field.en || Object.values(field)[0];
   };
 
-  const formatTimelineDate = (dateStr: string) => {
+  const formatTimelineDate = (dateStr: string | undefined) => {
     if (!dateStr) return t("about.present");
     try {
       const date = parseISO(`${dateStr}-01`);
@@ -57,6 +57,7 @@ export function AboutTimeline({ items, title, icon }: AboutTimelineProps) {
   const IconMap = {
     work: Briefcase,
     education: GraduationCap,
+    certificate: FileBadge,
   };
   const MainIcon = IconMap[icon];
 
@@ -98,7 +99,7 @@ export function AboutTimeline({ items, title, icon }: AboutTimelineProps) {
                         {getLocalized(item.subtitle)}
                       </span>
                       {item.gpa && (
-                        <div className="flex items-center gap-1.5 bg-accent/20 text-accent font-semibold px-2.5 py-0.5 rounded-full text-sm border border-accent/30">
+                        <div className="flex items-center gap-1.5 bg-accent/20 text-accent-foreground font-semibold px-2.5 py-0.5 rounded-full text-sm border border-accent/30">
                           <Award className="w-4 h-4" />
                           <span>{t("about.gpa")}: {item.gpa}</span>
                         </div>
@@ -107,7 +108,7 @@ export function AboutTimeline({ items, title, icon }: AboutTimelineProps) {
                   </div>
                   <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground bg-background/80 border rounded-full px-4 py-1.5 w-fit h-fit shadow-sm">
                     <Calendar className="w-4 h-4 text-primary" />
-                    <span>{formatTimelineDate(item.startDate)} — {formatTimelineDate(item.endDate)}</span>
+                    <span>{item.type === 'certificate' ? formatTimelineDate(item.startDate) : `${formatTimelineDate(item.startDate)} — ${formatTimelineDate(item.endDate)}`}</span>
                   </div>
                 </div>
 

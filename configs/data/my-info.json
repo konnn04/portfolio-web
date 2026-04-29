@@ -3,6 +3,10 @@
         "firstName": "Trieu",
         "middleName": "Thanh",
         "lastName": "Nguyen",
+        "fullName": {
+            "vi": "Nguyễn Thanh Triều",
+            "en": "Thanh Trieu Nguyen"
+        },
         "role": "Fullstack Developer",
         "country": "Vietnam",
         "city": "Ho Chi Minh",
@@ -97,11 +101,30 @@
                 "startDate": "2025-10",
                 "endDate": "2026-02",
                 "description": {
-                    "vi": "Tham gia phát triển hệ thống ERP cho doanh nghiệp vừa và nhỏ, tập trung vào quản lý kho và quy trình bán hàng.",
-                    "en": "Participated in the development of an ERP system for SMEs, focusing on inventory management and sales processes."
+                    "vi": "Tham gia phát triển hệ thống ERP cho doanh nghiệp vừa và nhỏ, tập trung vào quản lý kho và quy trình bán hàng. Xây dựng trên nền tảng Laravel, tích hợp Chatbot và các ứng dụng tự động hóa quy trình kinh doanh, giúp khách hàng tiết kiệm thời gian và tăng hiệu quả vận hành.",
+                    "en": "Participated in the development of an ERP system for SMEs, focusing on inventory management and sales processes. Built on the Laravel framework, integrating Chatbot and business process automation applications, helping clients save time and increase operational efficiency."
                 },
                 "links": [
                     "https://pizitech.com"
+                ]
+            },
+            {
+                "type": "work",
+                "company": {
+                    "vi": "Test IO",
+                    "en": "Test IO"
+                },
+                "position": {
+                    "vi": "Freelance Tester",
+                    "en": "Freelance Tester"
+                },
+                "startDate": "2025-12",
+                "description": {
+                    "vi": "Tham gia các dự án kiểm thử phần mềm nước ngoài với vai trò tester tự do, thực hiện kiểm thử chức năng và báo cáo lỗi. Có đóng góp hơn 50 lỗi được chấp nhận trên nền tảng.",
+                    "en": "Participated in various international software testing projects as a freelance tester, performing functional testing and reporting bugs. Contributed to over 50 accepted issues on the platform."
+                },
+                "links": [
+                    "https://tester.test.io/profile_pages/thanh_trieu_nguyen"
                 ]
             }
         ],
@@ -160,6 +183,18 @@
                 }
             }
         ],
-        "certificates": []
+        "certificates": [
+            {
+                "name": {
+                    "vi": "Chứng chỉ Tiếng Anh B1 VSTEP",
+                    "en": "VSTEP English Certificate - B1"
+                },
+                "organization": {
+                    "vi": "Trường Đại học Mở TP.HCM",
+                    "en": "Ho Chi Minh City Open University"
+                },
+                "issueDate": "2026-04"
+            }
+        ]
     }
 }

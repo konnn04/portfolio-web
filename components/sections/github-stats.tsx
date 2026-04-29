@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { ScrollReveal } from "@/components/ui/scroll-reveal";
 import { useLanguage } from "@/components/providers/providers";
-import { GitCommit, Users, BookOpen, Activity } from "lucide-react";
+import { GitCommit, Users, BookOpen } from "lucide-react";
 import { useMyInfo } from "@/hooks/use-my-info";
 
 interface GithubData {
@@ -41,7 +41,7 @@ export function GithubStats() {
     };
 
     fetchData();
-  }, []);
+  }, [username]);
 
   const totalCommits = data
     ? Object.values(data.langCommitCount).reduce((a, b) => a + b, 0)
@@ -95,14 +95,17 @@ export function GithubStats() {
             {/* Widgets Section */}
             <div className="flex flex-col gap-8 items-center max-w-4xl mx-auto">
               <ScrollReveal delay={0.2} className="w-full">
-                <div className="bg-secondary/20 backdrop-blur-sm border rounded-2xl p-4 overflow-hidden flex justify-center w-full">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={`https://github-profile-trophy.vercel.app/?username=${username}&theme=onedark&no-bg=true&margin-w=15&margin-h=15&no-frame=true`}
-                    alt="GitHub Trophies"
-                    loading="lazy"
-                    className="w-full max-w-full object-contain"
-                  />
+                <div className="bg-secondary/20 backdrop-blur-sm border rounded-2xl p-4 overflow-hidden w-full">
+                  <h2 className="text-xl font-bold text-center">{t("github.trophies")}</h2>
+                  <div className="w-full mt-4 flex justify-center">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={`https://trophygh.kolioaris.xyz/?username=${username}&theme=onedark&no-bg=true&margin-w=15&margin-h=15&no-frame=true`}
+                      alt="GitHub Trophies"
+                      loading="lazy"
+                      className="w-full max-w-full object-contain"
+                    />
+                  </div>
                 </div>
               </ScrollReveal>
 

@@ -14,9 +14,13 @@
   },
   "hero": {
     "greeting": "Hello!",
-    "role": "I'm a {role}",
+    "myName": "I'm a {fullName}",
+    "role": "{role}",
     "location": "Based in {city}, {country}",
-    "learn_more": "Learn more about me :3"
+    "learn_more": "Learn more about me :3",
+    "learn_more_desc": "Discover my journey",
+    "view_projects_desc": "Explore my works",
+    "read_blogs_desc": "Check out my insights"
   },
   "blogs": {
     "title": "Blog Insights",
@@ -46,6 +50,7 @@
     "description": "Here is my journey, experience, and the skills I have cultivated.",
     "education": "Education",
     "experience": "Experience",
+    "certificates": "Certificates",
     "skills": "My Skills",
     "featured_projects": "Featured Projects",
     "view_all_projects": "View All Projects",
@@ -60,6 +65,7 @@
     "total_commits": "Total Commits",
     "stats": "Statistics",
     "top_lang": "Top Languages",
-    "my_stats": "My Stats"
+    "my_stats": "My Stats",
+    "trophies": "GitHub Trophies"
   }
 }

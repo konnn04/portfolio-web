@@ -14,9 +14,13 @@
   },
   "hero": {
     "greeting": "Xin chào!",
-    "role": "Tôi là {role}",
+    "myName": "Mình là {fullName}",
+    "role": "{role}",
     "location": "Đang ở {city}, {country}",
-    "learn_more": "Hiểu thêm về tôi"
+    "learn_more": "Hiểu thêm về tôi",
+    "learn_more_desc": "Khám phá hành trình của tôi",
+    "view_projects_desc": "Khám phá các dự án",
+    "read_blogs_desc": "Đọc các bài viết"
   },
   "blogs": {
     "title": "Góc Chia Sẻ",
@@ -46,6 +50,7 @@
     "description": "Hành trình, kinh nghiệm và các kỹ năng tôi đã trau dồi.",
     "education": "Học vấn",
     "experience": "Kinh nghiệm làm việc",
+    "certificates": "Chứng chỉ",
     "skills": "Kỹ năng của tôi",
     "featured_projects": "Dự án Nổi Bật",
     "view_all_projects": "Xem Tất Cả Dự Án",
@@ -60,6 +65,7 @@
     "total_commits": "Tổng số Commit",
     "stats": "Thống kê",
     "top_lang": "Ngôn ngữ lập trình",
-    "my_stats": "Thống kê số liệu"
+    "my_stats": "Thống kê số liệu",
+    "trophies": "Cúp GitHub"
   }
 }
