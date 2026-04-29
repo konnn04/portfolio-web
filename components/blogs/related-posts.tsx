@@ -11,30 +11,30 @@ export function RelatedPosts({ currentSlug, categories }: { currentSlug: string;
   const [related, setRelated] = useState<Post[]>([]);
 
   useEffect(() => {
-    // Mark current post as read
+    // Get read posts from localStorage
     const readPosts = JSON.parse(localStorage.getItem("read_posts") || "[]");
+
+    // Add current post to read list if not already there
     if (!readPosts.includes(currentSlug)) {
-      readPosts.push(currentSlug);
-      localStorage.setItem("read_posts", JSON.stringify(readPosts));
+      const updatedReadPosts = [...readPosts, currentSlug];
+      localStorage.setItem("read_posts", JSON.stringify(updatedReadPosts));
     }
 
     const fetchRelated = async () => {
       try {
-        const catQuery = categories.length > 0 ? categories[0] : "";
-        const res = await fetch(`/api/posts?limit=100&category=${catQuery}`);
+        const res = await fetch("/api/posts/recommend", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            readSlugs: readPosts,
+            currentSlug: currentSlug,
+            limit: 3,
+          }),
+        });
         if (!res.ok) return;
-        
+
         const json = await res.json();
-        const allPosts: Post[] = json.data;
-
-        // Filter out the current post and already read posts
-        const unreadRelated = allPosts.filter(
-          (p) => p.metadata.slug !== currentSlug && !readPosts.includes(p.metadata.slug)
-        );
-
-        // Take up to 3 random posts
-        const shuffled = unreadRelated.sort(() => 0.5 - Math.random());
-        setRelated(shuffled.slice(0, 3));
+        setRelated(json.data || []);
       } catch (e) {
         console.error("Error fetching related posts", e);
       }
@@ -47,15 +47,20 @@ export function RelatedPosts({ currentSlug, categories }: { currentSlug: string;
 
   return (
     <div className="mt-16 border-t pt-10">
-      <h3 className="text-2xl font-bold mb-6 tracking-tight">Read Next</h3>
+      <h3 className="text-2xl font-bold mb-6 tracking-tight">Đọc thêm các bài khác?</h3>
       <div className="grid gap-6 md:grid-cols-3">
-        {related.map((post) => (
+        {related.map((post) => {
+          const imageUrl = post.metadata.image?.startsWith("assets/") 
+            ? `/blogs/${post.metadata.slug}/${post.metadata.image}` 
+            : post.metadata.image;
+
+          return (
           <Link key={post.metadata.slug} href={`/blogs/${post.metadata.slug}`} className="group block h-full">
             <article className="h-full flex flex-col rounded-xl border bg-card shadow-sm overflow-hidden transition-all hover:shadow-md hover:border-primary/50">
-              {post.metadata.image && (
+              {imageUrl && (
                  <div className="relative w-full aspect-video overflow-hidden">
                    <Image
-                     src={post.metadata.image}
+                     src={imageUrl}
                      alt={post.metadata.title}
                      fill
                      className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -77,7 +82,8 @@ export function RelatedPosts({ currentSlug, categories }: { currentSlug: string;
               </div>
             </article>
           </Link>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

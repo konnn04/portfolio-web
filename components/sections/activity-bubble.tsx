@@ -22,7 +22,10 @@ function getActivityThumbnail(act: DiscordActivity, discordData: DiscordData): s
     if (img.startsWith("mp:")) {
       return `https://media.discordapp.net/${img.slice(3)}`;
     }
-    return `https://cdn.discordapp.com/app-assets/${act.id}/${img}.png`;
+    // Use application_id instead of id for Discord CDN
+    const appId = act.application_id || act.id;
+    if (!appId) return null;
+    return `https://cdn.discordapp.com/app-assets/${appId}/${img}.png`;
   }
   return null;
 }

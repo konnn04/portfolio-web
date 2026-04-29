@@ -25,7 +25,7 @@ export function HeroSection() {
   const [discordData, setDiscordData] = useState<DiscordData | null>(null);
 
   const { profile } = useMyInfo();
-  const fullName = `${profile.firstName} ${profile.middleName} ${profile.lastName}`;
+  const fullName = profile.fullName[lang] || `${profile.firstName} ${profile.middleName} ${profile.lastName}`;
 
   const renderT = (key: string, params?: Record<string, string>) => {
     let str = t(key);
@@ -39,8 +39,9 @@ export function HeroSection() {
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
+  const lastUpdate = useRef(0);
 
-  const springConfig = { stiffness: 60, damping: 25, mass: 2 };
+  const springConfig = { stiffness: 40, damping: 30, mass: 2 };
   const smoothX = useSpring(mouseX, springConfig);
   const smoothY = useSpring(mouseY, springConfig);
 
@@ -62,8 +63,8 @@ export function HeroSection() {
       fetch(fetchUrl)
         .then((res) => res.json())
         .then((json) => {
-          if (json.success) {
-            setDiscordData(json.data);
+          if (json.success && json.data?.data) {
+            setDiscordData(json.data.data);
           }
         })
         .catch(console.error);
@@ -75,7 +76,7 @@ export function HeroSection() {
         fetch(fetchUrl)
           .then((res) => res.json())
           .then((json) => {
-            if (json.success) setDiscordData(json.data);
+            if (json.success && json.data?.data) setDiscordData(json.data.data);
           }).catch(() => {});
       }
     }, 15000);
@@ -84,6 +85,12 @@ export function HeroSection() {
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!containerRef.current) return;
+    
+    // Throttle tracking loop to max ~24fps to prevent lag
+    const now = Date.now();
+    if (now - lastUpdate.current < 40) return;
+    lastUpdate.current = now;
+
     const rect = containerRef.current.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width - 0.5;
     const y = (e.clientY - rect.top) / rect.height - 0.5;
@@ -146,7 +153,7 @@ export function HeroSection() {
             style={{ x: imageX, y: imageY }}
             className="order-2 md:order-1 flex-1 flex flex-col items-center md:items-start text-center md:text-left space-y-4 w-full mt-4 md:mt-0"
           >
-            <div className="flex items-center gap-3 bg-secondary/50 backdrop-blur-md px-4 py-2 rounded-full border shadow-sm w-max mx-auto md:mx-0">
+            <div className="flex items-center gap-3 bg-black/10 backdrop-blur-md px-4 py-2 rounded-full border shadow-sm w-max mx-auto md:mx-0">
               <MapPin className="w-4 h-4 text-primary" />
               <span className="text-sm font-medium">{renderT("hero.location", { city: profile.city, country: profile.country })}</span>
             </div>
@@ -166,8 +173,11 @@ export function HeroSection() {
                 </h2>
               </div>
               <h3 className="text-xl lg:text-3xl md:text-2xl font-bold text-primary italic">
-                  {renderT("hero.role", { role: profile.role })}
+                  {renderT("hero.myName", { fullName: fullName })}
               </h3>
+              <h5 className="text-lg md:text-xl font-semibold text-black/40 dark:text-white/80 border-l-4 border-primary pl-4 italic">
+                {renderT("hero.role", { role: profile.role })}
+              </h5>
               <p className="text-muted-foreground text-base md:text-lg max-w-sm mx-auto md:mx-0 mt-4">
                 {profile.bio[lang as keyof typeof profile.bio] || profile.bio.en}
               </p>
@@ -227,31 +237,33 @@ export function HeroSection() {
               <div className="relative flex items-center justify-between bg-background/90 backdrop-blur-md px-5 py-4 rounded-[14px]">
                 <div className="flex flex-col text-left">
                   <span className="text-lg font-bold text-foreground">{renderT("nav.view_projects")}</span>
-                  <span className="text-xs text-muted-foreground mt-1">Explore my works</span>
+                  <span className="text-xs text-muted-foreground mt-1">{renderT("hero.view_projects_desc")}</span>
                 </div>
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-colors">
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </div>
               </div>
             </Link>
 
             <Link href="/blogs" className="group relative w-full max-w-64 p-0.5 rounded-2xl bg-linear-to-r from-accent to-secondary overflow-hidden transition-transform hover:scale-[1.03] active:scale-95">
-              <div className="relative flex items-center justify-between bg-background/90 backdrop-blur-md px-5 py-4 rounded-[14px] border border-transparent group-hover:border-accent/50 transition-colors">
+              <div className="absolute inset-0 bg-linear-to-r from-accent to-secondary blur-sm opacity-50 group-hover:opacity-100 transition-opacity" />
+              <div className="relative flex items-center justify-between bg-background/90 backdrop-blur-md px-5 py-4 rounded-[14px]">
                 <div className="flex flex-col text-left">
                   <span className="text-lg font-bold text-foreground">{renderT("nav.read_blogs")}</span>
-                  <span className="text-xs text-muted-foreground mt-1">Check out my insights</span>
+                  <span className="text-xs text-muted-foreground mt-1">{renderT("hero.read_blogs_desc")}</span>
                 </div>
-                <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center group-hover:bg-accent group-hover:text-accent-foreground transition-colors">
+                <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center shrink-0 group-hover:bg-accent group-hover:text-accent-foreground transition-colors">
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </div>
               </div>
             </Link>
 
             <Link href="/about" className="group relative w-full max-w-64 p-0.5 rounded-2xl bg-linear-to-r from-secondary to-primary overflow-hidden transition-transform hover:scale-[1.03] active:scale-95">
-              <div className="relative flex items-center justify-between bg-background/90 backdrop-blur-md px-5 py-4 rounded-[14px] border border-transparent group-hover:border-primary/50 transition-colors">
-                <div className="flex flex-col text-left w-full mr-2">
+              <div className="absolute inset-0 bg-linear-to-r from-secondary to-primary blur-sm opacity-50 group-hover:opacity-100 transition-opacity" />
+              <div className="relative flex items-center justify-between bg-background/90 backdrop-blur-md px-5 py-4 rounded-[14px]">
+                <div className="flex flex-col text-left">
                   <span className="text-lg font-bold text-foreground">{renderT("hero.learn_more")}</span>
-                  <span className="text-xs text-muted-foreground mt-1">Discover my journey</span>
+                  <span className="text-xs text-muted-foreground mt-1">{renderT("hero.learn_more_desc")}</span>
                 </div>
                 <div className="w-8 h-8 rounded-full bg-secondary/30 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

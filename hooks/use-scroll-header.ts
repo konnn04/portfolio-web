@@ -5,7 +5,6 @@ export function useScrollHeader(thresholdBackground = 50, thresholdHide = 300) {
   const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
-    let lastScrollY = window.scrollY;
     let ticking = false;
 
     const handleScroll = () => {
@@ -17,13 +16,10 @@ export function useScrollHeader(thresholdBackground = 50, thresholdHide = 300) {
 
           if (currentScrollY <= thresholdHide) {
             setHidden(false);
-          } else if (currentScrollY > lastScrollY) {
-            setHidden(true);
-          } else if (currentScrollY < lastScrollY) {
-            setHidden(false);
+          } else {
+            setHidden(false); // Removed hide on scroll down
           }
 
-          lastScrollY = currentScrollY;
           ticking = false;
         });
         ticking = true;

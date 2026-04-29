@@ -41,9 +41,15 @@ export default function AboutPage() {
     position: Record<string, string>;
     company: Record<string, string>;
     startDate: string;
-    endDate: string;
+    endDate?: string;
     description: Record<string, string>;
     links?: string[];
+  }
+
+  interface Cert {
+    name: Record<string, string>;
+    organization: Record<string, string>;
+    issueDate: string;
   }
 
   // Format education and experience into timeline items
@@ -76,6 +82,15 @@ export default function AboutPage() {
     links: exp.links
   }));
 
+  const certificateItems = profile.certificates?.map((cert: Cert, i: number) => ({
+    id: `cert-${i}`,
+    type: "certificate" as const,
+    title: cert.name,
+    subtitle: cert.organization,
+    startDate: cert.issueDate,
+    endDate: "", 
+  })) || [];
+
   // Get top 3 pinned and newest projects
   const topProjects = (myProjects as Project[])
     .filter(p => p.pinned)
@@ -97,6 +112,9 @@ export default function AboutPage() {
         <div className="flex flex-col gap-20">
           <AboutTimeline items={experienceItems} title={t("about.experience")} icon="work" />
           <AboutTimeline items={educationItems} title={t("about.education")} icon="education" />
+          {certificateItems.length > 0 && (
+            <AboutTimeline items={certificateItems} title={t("about.certificates")} icon="certificate" />
+          )}
         </div>
 
         {/* Skills Section */}

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useRouter } from "next/navigation";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import en from "@/configs/messages/en.json";
 import vi from "@/configs/messages/vi.json";
@@ -11,7 +12,7 @@ type Language = "en" | "vi";
 interface LanguageContextType {
   lang: Language;
   setLang: (lang: Language) => void;
-  t: (key: string) => string; 
+  t: (key: string) => string;
 }
 
 export const LanguageContext = React.createContext<LanguageContextType>({
@@ -22,18 +23,20 @@ export const LanguageContext = React.createContext<LanguageContextType>({
 
 export const useLanguage = () => React.useContext(LanguageContext);
 
-export function Providers({ 
-  children, 
-  initialLang 
-}: { 
-  children: React.ReactNode; 
-  initialLang: Language; 
+export function Providers({
+  children,
+  initialLang
+}: {
+  children: React.ReactNode;
+  initialLang: Language;
 }) {
-  const [lang, setLang] = React.useState<Language>(initialLang);
+  const [lang, setLangState] = React.useState<Language>(initialLang);
+  const router = useRouter();
 
   const handleSetLang = (newLang: Language) => {
-    setLang(newLang);
+    setLangState(newLang);
     document.cookie = `language=${newLang}; path=/; max-age=31536000`;
+    router.refresh();
   };
 
   const t = (key: string): string => {

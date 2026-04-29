@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation"; 
 import { useScrollHeader } from "@/hooks/use-scroll-header";
@@ -13,7 +14,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Moon, Sun, Globe } from "lucide-react";
+import { Moon, Sun, Globe, Monitor } from "lucide-react";
 import Image from "next/image";
 
 const NAV_LINKS = [
@@ -29,11 +30,23 @@ export function Header() {
   
   const { scrolled, hidden: scrollHidden } = useScrollHeader(50, config.scrollThreshold); 
   const { lang, setLang, t } = useLanguage();
-  const { setTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+  }, []);
 
   const isHidden = (config.isHiddenUntilScroll && !scrolled) || scrollHidden;
 
   const hasBackground = config.noBGUntilScroll ? scrolled : true;
+
+  const cycleTheme = () => {
+    if (theme === "light") setTheme("dark");
+    else if (theme === "dark") setTheme("system");
+    else setTheme("light");
+  };
 
   return (
     <header
@@ -92,26 +105,18 @@ export function Header() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-                <span className="sr-only">Toggle theme</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setTheme("light")}>
-                {t("theme.light")}
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setTheme("dark")}>
-                {t("theme.dark")}
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setTheme("system")}>
-                {t("theme.system")}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-           </DropdownMenu>
+          <Button variant="ghost" size="icon" onClick={cycleTheme} title="Toggle theme">
+            {mounted ? (
+              <>
+                {theme === "light" && <Sun className="h-[1.2rem] w-[1.2rem]" />}
+                {theme === "dark" && <Moon className="h-[1.2rem] w-[1.2rem]" />}
+                {theme === "system" && <Monitor className="h-[1.2rem] w-[1.2rem]" />}
+              </>
+            ) : (
+              <span className="h-[1.2rem] w-[1.2rem]"></span>
+            )}
+            <span className="sr-only">Toggle theme</span>
+          </Button>
         </div>
       </div>
     </header>

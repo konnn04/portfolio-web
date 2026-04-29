@@ -1,5 +1,42 @@
 [
     {
+        "title": "Foxy Exam",
+        "slug": "foxy-exam",
+        "github": "https://github.com/konnn04/foxy-exam",
+        "website": "",
+        "images": [
+            "public/projects/foxy-exam-001.png",
+            "public/projects/foxy-exam-002.png",
+            "public/projects/foxy-exam-003.png"
+        ],
+        "description": {
+            "en": "Thesis project: Foxy Exam, a smart exam monitoring system utilizing a hybrid architecture with an Electron desktop client and microservices backend. Features multi-layer OS lockdown, multi-channel camera monitoring, AI-powered anomaly detection, and Zero-Trust architecture.",
+            "vi": "Khóa luận thiết kế Foxy Exam, hệ thống giám sát thi cử thông minh dựa trên kiến trúc lai kết hợp ứng dụng desktop (Electron) và hệ sinh thái microservices. Tích hợp chống gian lận đa tầng (Lockdown OS), giám sát đa kênh, công nghệ AI phát hiện gian lận và kiến trúc Zero Trust."
+        },
+        "langs": [
+            "typescript",
+            "python",
+            "javascript",
+            "golang",
+            "php"
+        ],
+        "contributors": [
+            "konnn04"
+        ],
+        "tags": [
+            "microservices",
+            "electron",
+            "typescript",
+            "laravel",
+            "react",
+            "python",
+            "adaface",
+            "yolov26"
+        ],
+        "joinAt": "2025-12-01",
+        "pinned": true
+    },
+    {
         "title": "Discord bot",
         "slug": "discord-bot",
         "github": "https://github.com/mpc-ou/discord-bot",

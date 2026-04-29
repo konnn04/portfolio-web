@@ -1,5 +1,6 @@
 export interface DiscordActivity {
   id?: string;
+  application_id?: string;
   type: number;
   name: string;
   state?: string;
