@@ -21,13 +21,13 @@ function validatePost(filePath: string): ValidationResult {
 
   const headerRaw = headerMatch[1];
   // slug is now from folder name, not required in metadata
-  const requiredKeys = ['title', 'date'];
-  
+  const requiredKeys = ['title', 'datetime', 'author', 'description'];
+
   for (const key of requiredKeys) {
-      const regex = new RegExp(`^\\s*-\\s*${key}\\s*:`, 'm');
-      if (!regex.test(headerRaw)) {
-          errors.push(`Missing required metadata key: ${key}`);
-      }
+    const regex = new RegExp(`^\\s*-\\s*${key}\\b\\s*:`, "mi");
+    if (!regex.test(headerRaw)) {
+      errors.push(`Missing required metadata key: ${key}`);
+    }
   }
 
   return { valid: errors.length === 0, errors };
@@ -43,29 +43,28 @@ function main() {
     dirNames.forEach(dirName => {
       const fullDir = path.join(postsDirectory, dirName);
       if (fs.statSync(fullDir).isDirectory()) {
-         // Check for any content file (content.md, content_en.md, content_vi.md)
-         const hasContentMd = fs.existsSync(path.join(fullDir, 'content.md'));
-         const hasContentEn = fs.existsSync(path.join(fullDir, 'content_en.md'));
-         const hasContentVi = fs.existsSync(path.join(fullDir, 'content_vi.md'));
+        const hasContentMd = fs.existsSync(path.join(fullDir, 'content.md'));
+        const hasContentEn = fs.existsSync(path.join(fullDir, 'content_en.md'));
+        const hasContentVi = fs.existsSync(path.join(fullDir, 'content_vi.md'));
 
-         if (!hasContentMd && !hasContentEn && !hasContentVi) {
-            console.error(`❌ Error in ${dirName}: Missing content file (content.md, content_en.md, or content_vi.md).`);
+        if (!hasContentMd && !hasContentEn && !hasContentVi) {
+          console.error(`❌ Error in ${dirName}: Missing content file (content.md, content_en.md, or content_vi.md).`);
+          hasErrors = true;
+        } else {
+          // Validate the English or default content file
+          const contentPath = hasContentMd
+            ? path.join(fullDir, 'content.md')
+            : hasContentEn ? path.join(fullDir, 'content_en.md') : path.join(fullDir, 'content_vi.md');
+
+          const result = validatePost(contentPath);
+          if (!result.valid) {
+            console.error(`❌ Error in ${dirName}:`);
+            result.errors.forEach(err => console.error(`  - ${err}`));
             hasErrors = true;
-         } else {
-            // Validate the English or default content file
-            const contentPath = hasContentMd
-              ? path.join(fullDir, 'content.md')
-              : hasContentEn ? path.join(fullDir, 'content_en.md') : path.join(fullDir, 'content_vi.md');
-
-            const result = validatePost(contentPath);
-            if (!result.valid) {
-               console.error(`❌ Error in ${dirName}:`);
-               result.errors.forEach(err => console.error(`  - ${err}`));
-               hasErrors = true;
-            } else {
-               console.log(`✅ ${dirName} is valid.`);
-            }
-         }
+          } else {
+            console.log(`✅ ${dirName} is valid.`);
+          }
+        }
       }
     });
   }

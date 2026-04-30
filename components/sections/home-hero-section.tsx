@@ -5,11 +5,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { useLanguage } from "@/components/providers/providers";
-import { MapPin, Github, Linkedin, Facebook, Mail, Youtube, ArrowRight } from "lucide-react";
+import { MapPin, Github, Linkedin, Facebook, Mail, Youtube, ArrowRight, User, BookOpen, Briefcase, Heart } from "lucide-react";
 import { useMyInfo } from "@/hooks/use-my-info";
 import type { DiscordData } from "@/types/discord";
 import { ActivityBubble } from "@/components/sections/activity-bubble";
 import { RetroGrid } from "@/components/sections/retro-grid";
+import { Badge } from "@/components/ui/badge";
 
 const SocialIcon = ({ Icon, href, label }: { Icon: React.ElementType, href: string, label: string }) => (
   <a href={href} target="_blank" rel="noreferrer" aria-label={label} className="p-2.5 rounded-full bg-background/50 border shadow-sm backdrop-blur-md hover:bg-primary hover:text-white hover:scale-110 transition-all duration-300">
@@ -147,7 +148,7 @@ export function HeroSection() {
       </motion.div>
 
       <div className="container relative z-10 mx-auto px-4 w-full max-w-7xl mt-8 pt-8">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-12 md:gap-4 h-full">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-12 h-full">
           
           <motion.div 
             style={{ x: imageX, y: imageY }}
@@ -172,12 +173,14 @@ export function HeroSection() {
                   {renderT("hero.greeting")}
                 </h2>
               </div>
-              <h3 className="text-xl lg:text-3xl md:text-2xl font-bold text-primary italic">
-                  {renderT("hero.myName", { fullName: fullName })}
+              <h3 className="text-xl md:text-3xl font-bold text-primary italic">
+                {renderT("hero.myName", { fullName: fullName })}
               </h3>
-              <h5 className="text-lg md:text-xl font-semibold text-black/40 dark:text-white/80 border-l-4 border-primary pl-4 italic">
-                {renderT("hero.role", { role: profile.role })}
-              </h5>
+              <div>
+                <Badge variant="secondary" className="w-fit px-3 py-1.5 text-sm bg-primary/10 text-primary border-primary/20">
+                  {profile.role}
+                </Badge>
+              </div>
               <p className="text-muted-foreground text-base md:text-lg max-w-sm mx-auto md:mx-0 mt-4">
                 {profile.bio[lang as keyof typeof profile.bio] || profile.bio.en}
               </p>
@@ -230,46 +233,51 @@ export function HeroSection() {
 
           <motion.div 
             style={{ x: imageX, y: imageY }}
-            className="order-3 md:order-3 flex-1 flex flex-col justify-center items-center md:items-end w-full space-y-4 mt-8 md:mt-0"
+            className="order-3 md:order-3 flex-1 grid grid-cols-2 gap-6 place-content-center items-center md:min-h-[400px] md:w-full mt-8 md:mt-0 max-w-[200px] mx-auto md:max-w-none"
           >
-            <Link href="/projects" className="group relative w-full max-w-64 p-0.5 rounded-2xl bg-linear-to-r from-primary to-accent overflow-hidden transition-transform hover:scale-[1.03] active:scale-95">
-              <div className="absolute inset-0 bg-linear-to-r from-primary to-accent blur-sm opacity-50 group-hover:opacity-100 transition-opacity" />
-              <div className="relative flex items-center justify-between bg-background/90 backdrop-blur-md px-5 py-4 rounded-[14px]">
-                <div className="flex flex-col text-left">
-                  <span className="text-lg font-bold text-foreground">{renderT("nav.view_projects")}</span>
-                  <span className="text-xs text-muted-foreground mt-1">{renderT("hero.view_projects_desc")}</span>
-                </div>
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-white transition-colors">
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </div>
-            </Link>
+            <motion.div 
+              className="flex justify-center square"
+              animate={{ y: [0, -10, 0] }} 
+              transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+            >
+              <Link href="/projects" className="group relative flex flex-col items-center justify-center w-28 h-28 sm:w-32 sm:h-32 rounded-2xl overflow-hidden shadow-[0_0_15px_rgba(var(--primary),0.3)] hover:scale-105 active:scale-95 transition-transform bg-background/80 backdrop-blur-md border border-primary/30 space-y-2">
+                <Briefcase className="w-8 h-8 sm:w-10 sm:h-10 text-primary group-hover:-translate-y-1 transition-transform" />
+                <span className="text-xs sm:text-sm font-semibold text-foreground text-center">{renderT("nav.projects")}</span>
+              </Link>
+            </motion.div>
 
-            <Link href="/blogs" className="group relative w-full max-w-64 p-0.5 rounded-2xl bg-linear-to-r from-accent to-secondary overflow-hidden transition-transform hover:scale-[1.03] active:scale-95">
-              <div className="absolute inset-0 bg-linear-to-r from-accent to-secondary blur-sm opacity-50 group-hover:opacity-100 transition-opacity" />
-              <div className="relative flex items-center justify-between bg-background/90 backdrop-blur-md px-5 py-4 rounded-[14px]">
-                <div className="flex flex-col text-left">
-                  <span className="text-lg font-bold text-foreground">{renderT("nav.read_blogs")}</span>
-                  <span className="text-xs text-muted-foreground mt-1">{renderT("hero.read_blogs_desc")}</span>
-                </div>
-                <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center shrink-0 group-hover:bg-accent group-hover:text-accent-foreground transition-colors">
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </div>
-            </Link>
+            <motion.div 
+              className="flex justify-center square"
+              animate={{ y: [0, -15, 0] }} 
+              transition={{ repeat: Infinity, duration: 5, delay: 1, ease: "easeInOut" }}
+            >
+              <Link href="/blogs" className="group relative flex flex-col items-center justify-center w-28 h-28 sm:w-32 sm:h-32 rounded-2xl overflow-hidden shadow-[0_0_15px_rgba(var(--primary),0.3)] hover:scale-105 active:scale-95 transition-transform bg-background/80 backdrop-blur-md border border-primary/30 space-y-2">
+                <BookOpen className="w-8 h-8 sm:w-10 sm:h-10 text-primary group-hover:-translate-y-1 transition-transform" />
+                <span className="text-xs sm:text-sm font-semibold text-foreground text-center">{renderT("nav.blogs")}</span>
+              </Link>
+            </motion.div>
 
-            <Link href="/about" className="group relative w-full max-w-64 p-0.5 rounded-2xl bg-linear-to-r from-secondary to-primary overflow-hidden transition-transform hover:scale-[1.03] active:scale-95">
-              <div className="absolute inset-0 bg-linear-to-r from-secondary to-primary blur-sm opacity-50 group-hover:opacity-100 transition-opacity" />
-              <div className="relative flex items-center justify-between bg-background/90 backdrop-blur-md px-5 py-4 rounded-[14px]">
-                <div className="flex flex-col text-left">
-                  <span className="text-lg font-bold text-foreground">{renderT("hero.learn_more")}</span>
-                  <span className="text-xs text-muted-foreground mt-1">{renderT("hero.learn_more_desc")}</span>
-                </div>
-                <div className="w-8 h-8 rounded-full bg-secondary/30 flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </div>
-            </Link>
+            <motion.div 
+              className="flex justify-center square"
+              animate={{ y: [0, -12, 0] }} 
+              transition={{ repeat: Infinity, duration: 4.5, delay: 0.5, ease: "easeInOut" }}
+            >
+              <Link href="/about" className="group relative flex flex-col items-center justify-center w-28 h-28 sm:w-32 sm:h-32 rounded-2xl overflow-hidden shadow-[0_0_15px_rgba(var(--primary),0.3)] hover:scale-105 active:scale-95 transition-transform bg-background/80 backdrop-blur-md border border-primary/30 space-y-2">
+                <User className="w-8 h-8 sm:w-10 sm:h-10 text-primary group-hover:-translate-y-1 transition-transform" />
+                <span className="text-xs sm:text-sm font-semibold text-foreground text-center">{renderT("nav.about_me")}</span>
+              </Link>
+            </motion.div>
+
+            <motion.div 
+              className="flex justify-center square"
+              animate={{ y: [0, -8, 0] }} 
+              transition={{ repeat: Infinity, duration: 3.5, delay: 2, ease: "easeInOut" }}
+            >
+              <Link href="/donate" className="group relative flex flex-col items-center justify-center w-28 h-28 sm:w-32 sm:h-32 rounded-2xl overflow-hidden shadow-[0_10px_20px_rgba(239,68,68,0.2)] hover:scale-105 active:scale-95 transition-transform bg-red-500/10 backdrop-blur-md border border-red-500/30 hover:bg-red-500 space-y-2 text-red-500 hover:text-white">
+                <Heart className="w-8 h-8 sm:w-10 sm:h-10 animate-pulse text-inherit" />
+                <span className="text-xs sm:text-sm font-bold text-inherit text-center">Donate</span>
+              </Link>
+            </motion.div>
           </motion.div>
           
         </div>

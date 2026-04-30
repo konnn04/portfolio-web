@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { format } from "date-fns";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Post } from "@/lib/posts";
 import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/components/providers/providers";
@@ -12,18 +15,35 @@ interface BlogCardProps {
 
 export function BlogCard({ post, viewMode }: BlogCardProps) {
   const { t } = useLanguage();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { title, slug, date, description, image, categories } = post.metadata;
   const imageUrl = image?.startsWith("assets/") ? `/blogs/${slug}/${image}` : image;
   const formattedDate = date ? format(new Date(date), "MMMM dd, yyyy") : "";
 
+  const handleTagClick = (e: React.MouseEvent<HTMLSpanElement>, tag: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tag", tag);
+    params.delete("page");
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
   if (viewMode === "list") {
     return (
       <Link href={`/blogs/${slug}`} className="group block">
-        <article className="p-6 rounded-2xl border bg-card text-card-foreground shadow-sm transition-all hover:shadow-md hover:border-primary/50 flex flex-col sm:flex-row gap-6">
+        <article className="p-6 rounded-2xl border bg-card text-card-foreground shadow-sm transition-all hover:shadow-md hover:border-primary/50 flex flex-col sm:flex-row gap-6 h-full">
           <div className="flex-1 space-y-3">
             <div className="flex items-center gap-2 flex-wrap">
               {categories?.map((cat) => (
-                <Badge key={cat} variant="secondary" className="rounded-full">
+                <Badge
+                  key={cat}
+                  variant="secondary"
+                  className="rounded-full cursor-pointer hover:bg-primary/20 transition-colors"
+                  onClick={(e) => handleTagClick(e, cat)}
+                >
                   {cat}
                 </Badge>
               ))}
@@ -54,9 +74,14 @@ export function BlogCard({ post, viewMode }: BlogCardProps) {
           </div>
         )}
         <div className="p-6 flex flex-col flex-1 space-y-3">
-          <div className="flex items-center gap-2 flex-wrap mb-1">
-            {categories?.slice(0, 2).map((cat) => (
-              <Badge key={cat} variant="secondary" className="rounded-full">
+          <div className="flex items-center gap-2 flex-wrap mb-2">
+            {categories?.slice(0, 3).map((cat) => (
+              <Badge
+                key={cat}
+                variant="secondary"
+                className="rounded-full cursor-pointer hover:bg-primary/20 transition-colors"
+                onClick={(e) => handleTagClick(e, cat)}
+              >
                 {cat}
               </Badge>
             ))}

@@ -5,7 +5,7 @@ import { ScrollReveal } from "@/components/ui/scroll-reveal";
 import { useHeader } from "@/components/providers/header-provider";
 import { useEffect } from "react";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Heart } from "lucide-react";
 
 import myInfo from "../../../configs/data/my-info.json";
 import myProjects from "../../../configs/data/my-projects.json";
@@ -91,7 +91,6 @@ export default function AboutPage() {
     endDate: "", 
   })) || [];
 
-  // Get top 3 pinned and newest projects
   const topProjects = (myProjects as Project[])
     .filter(p => p.pinned)
     .sort((a, b) => new Date(b.joinAt).getTime() - new Date(a.joinAt).getTime())
@@ -145,6 +144,22 @@ export default function AboutPage() {
               </ScrollReveal>
             ))}
           </div>
+          
+          <ScrollReveal direction="up" delay={0.2}>
+            <div className="mt-20 flex flex-col items-center justify-center text-center border-t border-border/50 pt-16">
+              <h3 className="text-2xl font-bold mb-4">{t("about.donate_cta_title")}</h3>
+              <p className="text-muted-foreground max-w-lg mb-8 text-balance">
+                {t("about.donate_cta_description")}
+              </p>
+              <Link 
+                href="/donate" 
+                className="group relative px-8 py-4 rounded-full bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white font-bold border border-red-500/30 overflow-hidden transition-all duration-300 shadow-[0_0_20px_rgba(239,68,68,0.2)] flex items-center gap-3 active:scale-95"
+              >
+                <Heart className="w-5 h-5 animate-pulse" />
+                <span>{t("about.donate_cta_button")}</span>
+              </Link>
+            </div>
+          </ScrollReveal>
 
           <ProjectDetailModal
             project={selectedProject}

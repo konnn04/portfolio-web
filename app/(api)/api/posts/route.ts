@@ -9,6 +9,7 @@ export async function GET(request: NextRequest) {
   const sortBy = searchParams.get("sortBy") || "date"; // 'date' | 'name'
   const sortOrder = searchParams.get("sortOrder") || "desc"; // 'asc' | 'desc'
   const category = searchParams.get("category") || "";
+  const tag = searchParams.get("tag") || "";
 
   let lang = request.cookies.get("language")?.value as "en" | "vi" | undefined;
   if (!lang) {
@@ -29,7 +30,15 @@ export async function GET(request: NextRequest) {
 
   if (category) {
     posts = posts.filter((post) => 
-        post.metadata.categories?.some((c: string) => c.toLowerCase() === category.toLowerCase())
+      post.metadata.categories?.some((c: string) => c.toLowerCase() === category.toLowerCase())
+    );
+  }
+
+  if (tag) {
+    const lowerTag = tag.toLowerCase();
+    posts = posts.filter((post) =>
+      post.metadata.keywords?.some((keyword: string) => keyword.toLowerCase() === lowerTag) ||
+      post.metadata.categories?.some((c: string) => c.toLowerCase() === lowerTag)
     );
   }
 

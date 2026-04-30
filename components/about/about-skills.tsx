@@ -1,9 +1,11 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { ScrollReveal } from "@/components/ui/scroll-reveal";
-import { Code2, Layers, Database, Wrench } from "lucide-react";
+import { Code2, Layers, Database, Wrench, ExternalLink, Loader2, Info } from "lucide-react";
 import { useLanguage } from "@/components/providers/providers";
 import { motion } from "framer-motion";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { toast } from "sonner";
 
 interface AboutSkillsProps {
@@ -13,6 +15,139 @@ interface AboutSkillsProps {
     databases: string[];
     tools: string[];
   }
+}
+
+function normalizeIconName(skill: string) {
+  const mapping: Record<string, string> = {
+    "react native": "react",
+    "next.js": "nextdotjs",
+    "node.js": "nodedotjs",
+    "vue.js": "vuedotjs",
+    "tailwind css": "tailwindcss",
+    "golang": "go",
+    // just some common exceptions
+  };
+  const lower = skill.toLowerCase();
+  if (mapping[lower]) return mapping[lower];
+  return lower.replace(/\.js$/, "dotjs").replace(/[^a-z0-9]/g, "");
+}
+
+function TechTooltip({ keyword }: { keyword: string }) {
+  const [data, setData] = useState<{ title: string; snippet: string; pageid: number } | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchWiki() {
+      try {
+        setLoading(true);
+        
+        let targetWikiTitle = "";
+        
+        // 1. Map directly if we know the exact precise page title
+        const exactMap: Record<string, string> = {
+          "React": "React (software)",
+          "NodeJS": "Node.js",
+          "NextJS": "Next.js",
+          "Next.js": "Next.js",
+          "TailwindCSS": "Tailwind CSS",
+          "ExpressJS": "Express.js",
+          "Cloudflare": "Cloudflare",
+          "PostgreSQL": "PostgreSQL",
+          "MongoDB": "MongoDB",
+          "Firebase": "Firebase",
+          "Zustand": "Zustand",
+          "Redux": "Redux (JavaScript library)",
+          "Prisma": "Prisma (database tools)",
+          "TypeScript": "TypeScript",
+          "JavaScript": "JavaScript",
+          "Golang": "Go (programming language)",
+          "Go": "Go (programming language)",
+          "PHP": "PHP",
+          "Laravel": "Laravel",
+          "Fastify": "Fastify",
+          "Django": "Django (web framework)",
+          "Flask": "Flask (web framework)",
+          "Gin": "Gin (web framework)",
+          "MySQL": "MySQL",
+          "Redis": "Redis",
+          "Supabase": "Supabase",
+          "Git": "Git",
+          "Docker": "Docker (software)",
+          "Apache": "Apache HTTP Server",
+          "Nginx": "Nginx"
+        };
+        
+        let dataFound = null;
+
+        if (exactMap[keyword]) {
+          targetWikiTitle = exactMap[keyword];
+          const url = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=intitle:"${targetWikiTitle}"&utf8=&format=json&origin=*`;
+          const res = await fetch(url);
+          const json = await res.json();
+          if (json.query && json.query.search.length > 0) {
+            dataFound = json.query.search.find((item: any) => item.title.toLowerCase() === targetWikiTitle.toLowerCase()) || json.query.search[0];
+          }
+        }
+
+        if (!dataFound) {
+          // 2. Try generic search with refined keywords matching exact phrase first
+          const refinedSearch = encodeURIComponent(`"${keyword}" AND (software OR programming OR framework OR platform OR computing OR IT)`);
+          const res = await fetch(`https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${refinedSearch}&utf8=&format=json&origin=*`);
+          const json = await res.json();
+          
+          if (json.query && json.query.search.length > 0) {
+            dataFound = json.query.search[0];
+          } else {
+            // 3. Fallback simple search
+            const fbRes = await fetch(`https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(keyword)}&utf8=&format=json&origin=*`);
+            const fbJson = await fbRes.json();
+            if (fbJson.query && fbJson.query.search.length > 0) {
+              dataFound = fbJson.query.search[0];
+            }
+          }
+        }
+
+        setData(dataFound);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchWiki();
+  }, [keyword]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center p-4">
+        <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (!data) {
+    return <div className="text-sm text-muted-foreground p-2">Không tìm thấy thông tin trên Wikipedia.</div>;
+  }
+
+  return (
+    <div className="flex flex-col gap-2 p-1">
+      <div className="flex items-center justify-between">
+        <h4 className="text-sm font-semibold">{data.title}</h4>
+        <a 
+          href={`https://en.wikipedia.org/?curid=${data.pageid}`} 
+          target="_blank" 
+          rel="noreferrer"
+          className="text-xs text-primary flex items-center gap-1 hover:underline"
+        >
+          <ExternalLink className="w-3 h-3" /> Wiki
+        </a>
+      </div>
+      <p 
+        className="text-xs text-muted-foreground line-clamp-4 leading-relaxed [&>span.searchmatch]:font-bold [&>span.searchmatch]:text-foreground"
+        dangerouslySetInnerHTML={{ __html: data.snippet + "..." }}
+      />
+    </div>
+  );
 }
 
 export function AboutSkills({ skills }: AboutSkillsProps) {
@@ -87,13 +222,28 @@ export function AboutSkills({ skills }: AboutSkillsProps) {
                 
                 <div className="flex flex-wrap gap-3">
                   {group.items.map((skill, i) => (
-                    <button 
-                      key={i}
-                      onClick={() => toast.info(lang === 'vi' ? `Chưa có thông tin chi tiết cho ${skill} lúc này.` : `No detailed info available for ${skill} at this time.`)}
-                      className="px-4 py-1.5 bg-background border rounded-lg text-sm font-medium hover:border-primary/60 hover:text-primary hover:shadow-[0_0_10px_rgba(var(--primary-rgb),0.3)] hover:-translate-y-1 transition-all duration-300 cursor-pointer"
-                    >
-                      {skill}
-                    </button>
+                    <HoverCard key={i}>
+                      <HoverCardTrigger asChild>
+                        <button 
+                          onClick={() => window.open(`https://google.com/search?q=${encodeURIComponent(skill + ' technology')}`, '_blank')}
+                          className="px-4 py-2 bg-background border rounded-lg text-sm font-medium hover:border-primary/60 hover:text-primary hover:shadow-[0_0_10px_rgba(var(--primary-rgb),0.3)] hover:-translate-y-1 transition-all duration-300 cursor-pointer flex items-center gap-2"
+                        >
+                          <img 
+                            src={`https://cdn.simpleicons.org/${normalizeIconName(skill)}`} 
+                            alt={skill} 
+                            className="w-4 h-4 dark:invert transition-all group-hover:scale-110" 
+                            onError={(e) => {
+                              // If icon not found, just hide it safely
+                              e.currentTarget.style.display = 'none';
+                            }}
+                          />
+                          <span>{skill}</span>
+                        </button>
+                      </HoverCardTrigger>
+                      <HoverCardContent className="w-80" align="start" side="bottom">
+                        <TechTooltip keyword={skill} />
+                      </HoverCardContent>
+                    </HoverCard>
                   ))}
                 </div>
               </motion.div>
