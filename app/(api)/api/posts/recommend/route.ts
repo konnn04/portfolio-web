@@ -16,18 +16,14 @@ export async function POST(request: NextRequest) {
 
     const posts = getAllPosts(lang);
 
-    // Filter out current post
-    let availablePosts = posts.filter(p => p.metadata.slug !== currentSlug);
+    const availablePosts = posts.filter(p => p.metadata.slug !== currentSlug);
 
-    // Separate into unread and read
     const unreadPosts = availablePosts.filter(p => !readSlugs.includes(p.metadata.slug));
     const readPosts = availablePosts.filter(p => readSlugs.includes(p.metadata.slug));
 
-    // Shuffle each group
     const shuffledUnread = unreadPosts.sort(() => 0.5 - Math.random());
     const shuffledRead = readPosts.sort(() => 0.5 - Math.random());
 
-    // Take from unread first, then fill from read if needed
     const recommended = [...shuffledUnread, ...shuffledRead].slice(0, limit);
 
     return NextResponse.json({

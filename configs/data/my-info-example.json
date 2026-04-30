@@ -197,7 +197,36 @@
             }
         ],
         "donate": [
-
+            {
+                "platform": {
+                    "vi": "Momo",
+                    "en": "Momo"
+                },
+                "accountName": "NGUYEN THANH TRIEU",
+                "accountNumber": "0123456789",
+                "icon": "wallet",
+                "link": "https://me.momo.vn/konnn04"
+            },
+            {
+                "platform": {
+                    "vi": "Chuyển khoản ngân hàng (VPBank)",
+                    "en": "Bank Transfer (VPBank)"
+                },
+                "accountName": "NGUYEN THANH TRIEU",
+                "accountNumber": "0123456789",
+                "icon": "landmark",
+                "link": ""
+            },
+            {
+                "platform": {
+                    "vi": "Mua cà phê cho tôi",
+                    "en": "Buy Me a Coffee"
+                },
+                "accountName": "konnn04",
+                "accountNumber": "",
+                "icon": "coffee",
+                "link": "https://buymeacoffee.com/konnn04"
+            }
         ]
     }
 }

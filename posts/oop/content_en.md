@@ -67,7 +67,6 @@ class Student {
 }
 ```
 
-<!-- keyword: encapsulation diagram oop -->
 ![encapsulation](assets/encapsulation-image.jpg)
 
 ---

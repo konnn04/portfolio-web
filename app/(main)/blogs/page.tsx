@@ -19,6 +19,18 @@ export default function BlogsClientPage() {
   const { t } = useLanguage();
 
   useEffect(() => {
+    const saved = localStorage.getItem("blogViewMode");
+    if (saved === "list" || saved === "card") {
+      setViewMode(saved);
+    }
+  }, []);
+
+  const handleSetViewMode = (mode: "list" | "card") => {
+    setViewMode(mode);
+    localStorage.setItem("blogViewMode", mode);
+  };
+
+  useEffect(() => {
     setConfig({ isHiddenUntilScroll: false, noBGUntilScroll: false });
   }, [setConfig]);
 
@@ -62,7 +74,7 @@ export default function BlogsClientPage() {
       </ScrollReveal>
 
       <ScrollReveal delay={0.1}>
-        <BlogFilters viewMode={viewMode} setViewMode={setViewMode} />
+        <BlogFilters viewMode={viewMode} setViewMode={handleSetViewMode} />
       </ScrollReveal>
 
       {loading ? (
@@ -72,19 +84,39 @@ export default function BlogsClientPage() {
           ))}
         </div>
       ) : posts.length > 0 ? (
-        <div
-          className={
-            viewMode === "card"
-              ? "grid gap-6 md:grid-cols-2 lg:grid-cols-3"
-              : "flex flex-col gap-6"
-          }
-        >
-          {posts.map((post, idx) => (
-            <ScrollReveal key={post.metadata.slug} delay={idx * 0.08} direction="up">
-              <BlogCard post={post} viewMode={viewMode} />
-            </ScrollReveal>
-          ))}
-        </div>
+        viewMode === "card" ? (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {posts.map((post, idx) => (
+              <ScrollReveal key={post.metadata.slug} delay={idx * 0.08} direction="up">
+                <BlogCard post={post} viewMode={viewMode} />
+              </ScrollReveal>
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-10">
+            {Object.entries(
+              posts.reduce((acc, post) => {
+                const year = post.metadata.date ? new Date(post.metadata.date).getFullYear() : "Past";
+                if (!acc[year]) acc[year] = [];
+                acc[year].push(post);
+                return acc;
+              }, {} as Record<string, Post[]>)
+            ).sort(([a], [b]) => Number(b) - Number(a)).map(([year, yearPosts]) => (
+              <div key={year} className="space-y-6">
+                <div className="rounded-full bg-background/70 px-5 py-3 text-xl font-semibold text-primary shadow-sm shadow-primary/10">
+                  {year}
+                </div>
+                <div className="space-y-4">
+                  {yearPosts.map((post, idx) => (
+                    <ScrollReveal key={post.metadata.slug} delay={idx * 0.06} direction="up">
+                      <BlogCard post={post} viewMode={viewMode} />
+                    </ScrollReveal>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )
       ) : (
         <div className="text-center py-20 bg-muted/30 rounded-2xl border border-dashed">
           <h3 className="text-2xl font-bold tracking-tight mb-2">{t("blogs.no_posts_title")}</h3>

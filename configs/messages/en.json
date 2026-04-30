@@ -2,10 +2,17 @@
   "nav": {
     "home": "Home",
     "project": "Project",
+    "projects": "Projects",
     "blogs": "Blogs",
-    "about": "About me",
-    "view_projects": "View Projects",
-    "read_blogs": "Read Blogs"
+    "about": "About",
+    "about_me": "About Me",
+    "donate": "Donate",
+    "view_projects": "Projects",
+    "read_blogs": "Blogs",
+    "view_projects_desc": "Explore my projects",
+    "read_blogs_desc": "Read my blog posts",
+    "learn_more": "About Me",
+    "learn_more_desc": "Learn more about me"
   },
   "theme": {
     "light": "Light",
@@ -16,11 +23,7 @@
     "greeting": "Hello!",
     "myName": "I'm a {fullName}",
     "role": "{role}",
-    "location": "Based in {city}, {country}",
-    "learn_more": "Learn more about me :3",
-    "learn_more_desc": "Discover my journey",
-    "view_projects_desc": "Explore my works",
-    "read_blogs_desc": "Check out my insights"
+    "location": "Based in {city}, {country}"
   },
   "blogs": {
     "title": "Blog Insights",
@@ -32,6 +35,8 @@
     "sort_oldest": "Oldest First",
     "sort_name_asc": "Name (A-Z)",
     "sort_name_desc": "Name (Z-A)",
+    "category_label": "Category:",
+    "tag_label": "Tag:",
     "read_more": "Read more",
     "no_posts_title": "No posts found",
     "no_posts_desc": "We couldn't find any posts matching your search criteria."
@@ -54,8 +59,20 @@
     "skills": "My Skills",
     "featured_projects": "Featured Projects",
     "view_all_projects": "View All Projects",
+    "donate_cta_title": "Support My Work",
+    "donate_cta_description": "If you found my content helpful or want to support my open-source projects, consider buying me a coffee.",
+    "donate_cta_button": "Make a Donation",
     "present": "Present",
     "gpa": "GPA"
+  },
+  "donate": {
+    "support_label": "Support",
+    "title": "Support My Work",
+    "description": "If you’d like to support my open-source work or buy me a coffee, you can do it through one of these channels.",
+    "support": "Support",
+    "account_number": "Account number",
+    "visit_link": "Visit link",
+    "copy_info": "Use the account details above to donate."
   },
   "github": {
     "title": "GitHub Activity",
@@ -67,5 +84,8 @@
     "top_lang": "Top Languages",
     "my_stats": "My Stats",
     "trophies": "GitHub Trophies"
+  },
+  "footer": {
+    "introduce": "This is an open source project, you can find the source code on"
   }
 }

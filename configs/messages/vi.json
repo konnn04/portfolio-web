@@ -2,10 +2,17 @@
   "nav": {
     "home": "Trang chủ",
     "project": "Dự án",
+    "projects": "Dự án",
     "blogs": "Bài viết",
     "about": "Về tôi",
-    "view_projects": "Xem Dự Án",
-    "read_blogs": "Đọc Bài Viết"
+    "about_me": "Bản thân",
+    "donate": "Ủng hộ",
+    "view_projects": "Dự án",
+    "read_blogs": "Bài viết",
+    "view_projects_desc": "Khám phá dự án của tôi",
+    "read_blogs_desc": "Đọc các bài viết chia sẻ",
+    "learn_more": "Bản thân",
+    "learn_more_desc": "Tìm hiểu thêm về tôi"
   },
   "theme": {
     "light": "Sáng",
@@ -16,11 +23,7 @@
     "greeting": "Xin chào!",
     "myName": "Mình là {fullName}",
     "role": "{role}",
-    "location": "Đang ở {city}, {country}",
-    "learn_more": "Hiểu thêm về tôi",
-    "learn_more_desc": "Khám phá hành trình của tôi",
-    "view_projects_desc": "Khám phá các dự án",
-    "read_blogs_desc": "Đọc các bài viết"
+    "location": "Đang ở {city}, {country}"
   },
   "blogs": {
     "title": "Góc Chia Sẻ",
@@ -32,6 +35,8 @@
     "sort_oldest": "Cũ nhất",
     "sort_name_asc": "Tên (A-Z)",
     "sort_name_desc": "Tên (Z-A)",
+    "category_label": "Danh mục:",
+    "tag_label": "Nhãn:",
     "read_more": "Đọc tiếp",
     "no_posts_title": "Không tìm thấy bài viết",
     "no_posts_desc": "Chúng tôi không tìm thấy bài viết nào phù hợp với tiêu chí tìm kiếm của bạn."
@@ -54,8 +59,20 @@
     "skills": "Kỹ năng của tôi",
     "featured_projects": "Dự án Nổi Bật",
     "view_all_projects": "Xem Tất Cả Dự Án",
+    "donate_cta_title": "Ủng hộ công việc của tôi",
+    "donate_cta_description": "Nếu bạn thấy nội dung hữu ích hoặc muốn ủng hộ các dự án mã nguồn mở của tôi, hãy mua tôi một ly cà phê.",
+    "donate_cta_button": "Ủng hộ ngay",
     "present": "Hiện tại",
     "gpa": "Điểm trung bình (GPA)"
+  },
+  "donate": {
+    "support_label": "Ủng hộ",
+    "title": "Ủng hộ công việc của tôi",
+    "description": "Nếu bạn muốn ủng hộ công việc mã nguồn mở của tôi hoặc mua tôi một ly cà phê, bạn có thể dùng các kênh sau.",
+    "support": "Ủng hộ",
+    "account_number": "Số tài khoản",
+    "visit_link": "Mở liên kết",
+    "copy_info": "Dùng thông tin tài khoản bên trên để ủng hộ."
   },
   "github": {
     "title": "Hoạt Động GitHub",
@@ -67,5 +84,8 @@
     "top_lang": "Ngôn ngữ lập trình",
     "my_stats": "Thống kê số liệu",
     "trophies": "Cúp GitHub"
+  },
+  "footer": {
+    "introduce": "Đây là một dự án mã nguồn mở, bạn có thể tìm thấy mã nguồn trên"
   }
 }
