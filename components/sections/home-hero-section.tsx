@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { useLanguage } from "@/components/providers/providers";
-import { MapPin, Github, Linkedin, Facebook, Mail, Youtube, ArrowRight, User, BookOpen, Briefcase, Heart } from "lucide-react";
+import { MapPin, Github, Linkedin, Facebook, Mail, Youtube, User, BookOpen, Briefcase, Heart } from "lucide-react";
 import { useMyInfo } from "@/hooks/use-my-info";
 import type { DiscordData } from "@/types/discord";
 import { ActivityBubble } from "@/components/sections/activity-bubble";

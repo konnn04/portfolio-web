@@ -10,7 +10,6 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { ShareSticky } from "@/components/blogs/share-sticky";
 import { RelatedPosts } from "@/components/blogs/related-posts";
-import { Badge } from "@/components/ui/badge";
 import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
 import { Metadata } from "next";
@@ -167,11 +166,11 @@ export default async function BlogPostPage({ params }: Props) {
             remarkPlugins={[remarkGfm]}
             rehypePlugins={[rehypeRaw]}
             components={{
-              code({ className, children, node, ...props }: any) {
+              code({ className, children, ...props }: { className?: string; children: React.ReactNode } & Record<string, unknown>) {
                 const match = /language-(\w+)/.exec(className || "");
                 const isInline = !match;
 
-                let codeText = String(children).replace(/\n$/, "");
+                const codeText = String(children).replace(/\n$/, "");
 
                 if (isInline) {
                   return (
@@ -187,7 +186,7 @@ export default async function BlogPostPage({ params }: Props) {
                 return (
                   <div className="my-4 overflow-hidden rounded-xl bg-[#1E1E1E]">
                     <SyntaxHighlighter
-                      style={vscDarkPlus as any}
+                      style={vscDarkPlus}
                       language={match?.[1]}
                       PreTag="div"
                       customStyle={{ margin: 0, padding: "1rem" }}
@@ -199,13 +198,13 @@ export default async function BlogPostPage({ params }: Props) {
                 );
               },
 
-              pre({ children }) {
+              pre({ children }: { children: React.ReactNode }) {
                 return <>{children}</>;
               },
 
-              p: ({ node, children, ...props }: any) => {
+              p: ({ node, children, ...props }: { node?: { children?: Array<{ tagName?: string }> }; children: React.ReactNode } & Record<string, unknown>) => {
                 const hasImageChild = node?.children?.some(
-                  (child: any) => child.tagName === "img"
+                  (child) => child.tagName === "img"
                 );
                 if (hasImageChild) {
                   return <div {...props} className="my-8">{children}</div>;
@@ -213,9 +212,10 @@ export default async function BlogPostPage({ params }: Props) {
                 return <p {...props}>{children}</p>;
               },
 
-              img: ({ node, ...props }: any) => {
+              img: (props: { src?: string; alt?: string } & Record<string, unknown>) => {
+                const imageProps = props as { src?: string; alt?: string };
                 const imgSrc =
-                  typeof props.src === "string" ? props.src : undefined;
+                  typeof imageProps.src === "string" ? imageProps.src : undefined;
 
                 const src = imgSrc?.startsWith("assets/")
                   ? `/blogs/${slug}/${imgSrc}`
@@ -229,13 +229,13 @@ export default async function BlogPostPage({ params }: Props) {
                         {...props}
                         src={src}
                         className="rounded-xl border shadow-sm max-h-[70vh] w-auto object-contain"
-                        alt={props.alt || "Blog image"}
+                        alt={imageProps.alt || "Blog image"}
                         loading="lazy"
                       />
                     </Zoom>
-                    {props.alt && (
+                    {imageProps.alt && (
                       <figcaption className="mt-3 text-sm text-center text-muted-foreground">
-                        {props.alt}
+                        {imageProps.alt}
                       </figcaption>
                     )}
                   </figure>

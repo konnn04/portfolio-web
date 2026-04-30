@@ -34,19 +34,6 @@ export function BlogFilters({ viewMode, setViewMode }: BlogFiltersProps) {
 
   const [searchValue, setSearchValue] = useState(currentSearch);
 
-  const createQueryString = useCallback(
-    (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      if (value) {
-        params.set(name, value);
-      } else {
-        params.delete(name);
-      }
-      return params.toString();
-    },
-    [searchParams]
-  );
-
   const buildPath = (params: URLSearchParams) =>
     `${pathname}${params.toString() ? `?${params.toString()}` : ""}`;
 

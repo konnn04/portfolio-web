@@ -2,11 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { ScrollReveal } from "@/components/ui/scroll-reveal";
-import { Code2, Layers, Database, Wrench, ExternalLink, Loader2, Info } from "lucide-react";
+import { Code2, Layers, Database, Wrench, ExternalLink, Loader2 } from "lucide-react";
 import { useLanguage } from "@/components/providers/providers";
 import { motion } from "framer-motion";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
-import { toast } from "sonner";
 
 interface AboutSkillsProps {
   skills: {
@@ -77,15 +76,21 @@ function TechTooltip({ keyword }: { keyword: string }) {
           "Nginx": "Nginx"
         };
         
-        let dataFound = null;
+        type WikiSearchItem = {
+          title: string;
+          snippet: string;
+          pageid: number;
+        };
+
+        let dataFound: WikiSearchItem | null = null;
 
         if (exactMap[keyword]) {
           targetWikiTitle = exactMap[keyword];
           const url = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=intitle:"${targetWikiTitle}"&utf8=&format=json&origin=*`;
           const res = await fetch(url);
-          const json = await res.json();
-          if (json.query && json.query.search.length > 0) {
-            dataFound = json.query.search.find((item: any) => item.title.toLowerCase() === targetWikiTitle.toLowerCase()) || json.query.search[0];
+          const json = await res.json() as { query?: { search?: WikiSearchItem[] } };
+          if (json.query?.search?.length) {
+            dataFound = json.query.search.find((item) => item.title.toLowerCase() === targetWikiTitle.toLowerCase()) || json.query.search[0];
           }
         }
 
@@ -151,7 +156,7 @@ function TechTooltip({ keyword }: { keyword: string }) {
 }
 
 export function AboutSkills({ skills }: AboutSkillsProps) {
-  const { lang, t } = useLanguage();
+  const { t } = useLanguage();
 
   const skillGroups = [
     {
