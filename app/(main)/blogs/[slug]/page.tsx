@@ -3,9 +3,10 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { format } from "date-fns";
-import ReactMarkdown from "react-markdown";
+import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
+import { type CSSProperties } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { ShareSticky } from "@/components/blogs/share-sticky";
@@ -110,6 +111,86 @@ export default async function BlogPostPage({ params }: Props) {
     ? `/blogs/${slug}/${image}`
     : image;
 
+  const syntaxHighlighterStyle = vscDarkPlus as unknown as Record<string, CSSProperties>;
+
+  const markdownComponents: Components = {
+    code: ({ className, children, ...props }) => {
+      const match = /language-(\w+)/.exec(String(className || ""));
+      const isInline = !match;
+
+      const codeText = String(children).replace(/\n$/, "");
+
+      if (isInline) {
+        return (
+          <code
+            className="px-1.5 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800 font-mono text-sm"
+            {...props}
+          >
+            {codeText}
+          </code>
+        );
+      }
+
+      return (
+        <div className="my-4 overflow-hidden rounded-xl bg-[#1E1E1E]">
+          <SyntaxHighlighter
+            // @ts-expect-error react-syntax-highlighter style type mismatch
+            style={syntaxHighlighterStyle}
+            language={match?.[1]}
+            PreTag="div"
+            customStyle={{ margin: 0, padding: "1rem" }}
+            {...props}
+          >
+            {codeText}
+          </SyntaxHighlighter>
+        </div>
+      );
+    },
+
+    pre: ({ children }) => {
+      return <>{children}</>;
+    },
+
+    p: ({ node, children, ...props }) => {
+      const hasImageChild = Array.isArray(node?.children)
+        && node.children.some((child) => {
+          return typeof child === "object" && child !== null && "tagName" in child && (child as { tagName?: string }).tagName === "img";
+        });
+      if (hasImageChild) {
+        return <div {...props} className="my-8">{children}</div>;
+      }
+      return <p {...props}>{children}</p>;
+    },
+
+    img: ({ src, alt, ...props }) => {
+      const imgSrc = typeof src === "string" ? src : undefined;
+      const altText = typeof alt === "string" ? alt : undefined;
+      const srcValue = imgSrc?.startsWith("assets/")
+        ? `/blogs/${slug}/${imgSrc}`
+        : imgSrc;
+
+      return (
+        <figure className="my-8 flex flex-col items-center w-full">
+          <Zoom>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              {...props}
+              src={srcValue}
+              className="rounded-xl border shadow-sm max-h-[70vh] w-auto object-contain"
+              alt={altText || "Blog image"}
+              loading="lazy"
+            />
+          </Zoom>
+          {altText && (
+            <figcaption className="mt-3 text-sm text-center text-muted-foreground">
+              {altText}
+            </figcaption>
+          )}
+        </figure>
+      );
+    },
+  };
+
   return (
     <article className="relative min-h-screen pb-20">
       {/* Hero */}
@@ -165,83 +246,7 @@ export default async function BlogPostPage({ params }: Props) {
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             rehypePlugins={[rehypeRaw]}
-            components={{
-              code({ className, children, ...props }: { className?: string; children: React.ReactNode } & Record<string, unknown>) {
-                const match = /language-(\w+)/.exec(className || "");
-                const isInline = !match;
-
-                const codeText = String(children).replace(/\n$/, "");
-
-                if (isInline) {
-                  return (
-                    <code
-                      className="px-1.5 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800 font-mono text-sm"
-                      {...props}
-                    >
-                      {codeText}
-                    </code>
-                  );
-                }
-
-                return (
-                  <div className="my-4 overflow-hidden rounded-xl bg-[#1E1E1E]">
-                    <SyntaxHighlighter
-                      style={vscDarkPlus}
-                      language={match?.[1]}
-                      PreTag="div"
-                      customStyle={{ margin: 0, padding: "1rem" }}
-                      {...props}
-                    >
-                      {codeText}
-                    </SyntaxHighlighter>
-                  </div>
-                );
-              },
-
-              pre({ children }: { children: React.ReactNode }) {
-                return <>{children}</>;
-              },
-
-              p: ({ node, children, ...props }: { node?: { children?: Array<{ tagName?: string }> }; children: React.ReactNode } & Record<string, unknown>) => {
-                const hasImageChild = node?.children?.some(
-                  (child) => child.tagName === "img"
-                );
-                if (hasImageChild) {
-                  return <div {...props} className="my-8">{children}</div>;
-                }
-                return <p {...props}>{children}</p>;
-              },
-
-              img: (props: { src?: string; alt?: string } & Record<string, unknown>) => {
-                const imageProps = props as { src?: string; alt?: string };
-                const imgSrc =
-                  typeof imageProps.src === "string" ? imageProps.src : undefined;
-
-                const src = imgSrc?.startsWith("assets/")
-                  ? `/blogs/${slug}/${imgSrc}`
-                  : imgSrc;
-
-                return (
-                  <figure className="my-8 flex flex-col items-center w-full">
-                    <Zoom>
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        {...props}
-                        src={src}
-                        className="rounded-xl border shadow-sm max-h-[70vh] w-auto object-contain"
-                        alt={imageProps.alt || "Blog image"}
-                        loading="lazy"
-                      />
-                    </Zoom>
-                    {imageProps.alt && (
-                      <figcaption className="mt-3 text-sm text-center text-muted-foreground">
-                        {imageProps.alt}
-                      </figcaption>
-                    )}
-                  </figure>
-                );
-              },
-            }}
+            components={markdownComponents}
           >
             {post.content}
           </ReactMarkdown>
