@@ -16,7 +16,6 @@ import {
   LabelList,
 } from "recharts";
 
-
 interface CodeData {
   stats: { repos: number; followers: number; stars: number; contributions: number };
   languages: { name: string; count: number; pct: number }[];
@@ -41,12 +40,19 @@ function StatCard({ icon: Icon, value, label }: { icon: React.ElementType; value
   );
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function WireframeBarShape(props: any) {
+interface WireframeBarShapeProps {
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+  fill?: string;
+}
+
+function WireframeBarShape(props: WireframeBarShapeProps) {
   const { x = 0, y = 0, width = 0, height = 0, fill = "currentColor" } = props;
   if (width <= 0 || height <= 0) return null;
 
-  const gap = 4; 
+  const gap = 4;
 
   return (
     <g className="transition-all duration-300 hover:opacity-80">
@@ -60,39 +66,42 @@ function WireframeBarShape(props: any) {
         y={y}
         width={width}
         height={height}
-        fill="none"      
+        fill="none"
         stroke={fill}
         strokeWidth={1.5}
         rx={2}
         ry={2}
       />
 
-      <line 
-        x1={x + width} 
-        y1={y} 
-        x2={x + width + gap} 
-        y2={y - gap} 
-        stroke={fill} 
-        strokeWidth={1} 
-        opacity={0.6} 
+      <line
+        x1={x + width}
+        y1={y}
+        x2={x + width + gap}
+        y2={y - gap}
+        stroke={fill}
+        strokeWidth={1}
+        opacity={0.6}
       />
-      <line 
-        x1={x + width + gap} 
-        y1={y - gap} 
-        x2={x + gap} 
-        y2={y - gap} 
-        stroke={fill} 
-        strokeWidth={1} 
+      <line
+        x1={x + width + gap}
+        y1={y - gap}
+        x2={x + gap}
+        y2={y - gap}
+        stroke={fill}
+        strokeWidth={1}
         strokeDasharray="2 2"
-        opacity={0.4} 
+        opacity={0.4}
       />
     </g>
   );
 }
+
 export function HomeCodeStats() {
   const { t } = useLanguage();
   const [data, setData] = useState<CodeData | null>(null);
   const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
+
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -106,8 +115,16 @@ export function HomeCodeStats() {
         } else setStatus("error");
       })
       .catch(() => alive && setStatus("error"));
+
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
     return () => {
       alive = false;
+      window.removeEventListener("resize", checkMobile);
     };
   }, []);
 
@@ -198,7 +215,7 @@ export function HomeCodeStats() {
                         <BarChart
                           data={chartData}
                           layout="vertical"
-                          margin={{ top: 10, right: 50, bottom: 10, left: 120 }} 
+                          margin={{ top: 10, right: 15, bottom: 10, left: isMobile ? 10 : 20 }}
                           barSize={16}
                         >
                           <XAxis type="number" hide domain={[0, 100]} />
@@ -207,38 +224,37 @@ export function HomeCodeStats() {
                             dataKey="name"
                             axisLine={false}
                             tickLine={false}
-                            width={110}
+                            width={isMobile ? 90 : 120}
                             tick={(tickProps) => {
                               const { x, y, payload, index } = tickProps;
                               const rank = (index ?? 0) + 1;
                               const RankIcon = rank === 1 ? Crown : rank === 2 ? Medal : rank === 3 ? Award : null;
-                              
+
                               return (
-                                <g transform={`translate(${x - 10}, ${y})`}>
+                                <g transform={`translate(${x}, ${y})`}>
                                   <foreignObject
-                                    x={-110}
+                                    x={isMobile ? -95 : -120}
                                     y={-12}
-                                    width={110}
+                                    width={isMobile ? 100 : 115}
                                     height={24}
                                     style={{ overflow: "visible" }}
                                   >
-                                    <div className="flex h-full items-center justify-end gap-1.5 pr-2 text-sm">
+                                    <div className="flex h-full items-center justify-end gap-1.5 pr-2">
                                       {RankIcon ? (
                                         <RankIcon
-                                          className={`h-3.5 w-3.5 shrink-0 ${
-                                            rank === 1
+                                          className={`h-3.5 w-3.5 shrink-0 ${rank === 1
                                               ? "text-amber-400"
                                               : rank === 2
                                                 ? "text-slate-400"
                                                 : "text-orange-500"
-                                          }`}
+                                            }`}
                                         />
                                       ) : (
-                                        <span className="text-[10px] font-bold tabular-nums text-muted-foreground/40">
+                                        <span className="text-[9px] font-bold tabular-nums text-muted-foreground/40 font-mono">
                                           #{rank}
                                         </span>
                                       )}
-                                      <span className="truncate font-mono text-xs font-medium text-foreground/90">
+                                      <span className="truncate font-mono text-[11px] sm:text-xs font-semibold text-foreground/90">
                                         {payload.value}
                                       </span>
                                     </div>
@@ -255,27 +271,27 @@ export function HomeCodeStats() {
                           >
                             {chartData.map((_, i) => {
                               const palette = [
-                                "#818cf8", 
-                                "#34d399", 
-                                "#fbbf24", 
-                                "#f472b6", 
-                                "#22d3ee", 
-                                "#a78bfa", 
+                                "#818cf8",
+                                "#34d399",
+                                "#fbbf24",
+                                "#f472b6",
+                                "#22d3ee",
+                                "#a78bfa",
                               ];
-                              return (
-                                <Cell key={i} fill={palette[i % palette.length]} />
-                              );
+                              return <Cell key={i} fill={palette[i % palette.length]} />;
                             })}
+
+                            { }
                             <LabelList
                               dataKey="normalizedPct"
-                              position="right"
                               content={(labelProps) => {
                                 const { x = 0, y = 0, index } = labelProps;
                                 const orig = chartData[index ?? 0]?.pct ?? 0;
+
                                 return (
-                                  <g transform={`translate(${Number(x) + 8}, ${Number(y) + 4})`}>
+                                  <g transform={`translate(${Number(x) + 4}, ${Number(y) - 2})`}>
                                     <text
-                                      className="font-mono text-[11px] font-bold fill-foreground/80"
+                                      className="font-mono text-[10px] font-bold fill-foreground/60 select-none"
                                       textAnchor="start"
                                     >
                                       {orig}%
