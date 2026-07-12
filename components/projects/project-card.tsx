@@ -5,7 +5,7 @@ import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/components/providers/providers";
 import type { Project } from "@/types/project";
-import { Github, ExternalLink } from "lucide-react";
+import { Github, ExternalLink, Pin } from "lucide-react";
 
 interface ProjectCardProps {
   project: Project;
@@ -21,20 +21,27 @@ export function ProjectCard({ project, onClick }: ProjectCardProps) {
     <button
       type="button"
       onClick={onClick}
-      className="group block h-full w-full text-left cursor-pointer"
+      className="group block h-full w-full cursor-pointer text-left"
     >
-      <article className="h-full flex flex-col rounded-2xl border bg-card text-card-foreground shadow-sm overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-primary/50 hover:-translate-y-1">
+      <article className="card-3d relative flex h-full flex-col overflow-hidden rounded-2xl border bg-card text-card-foreground transition-all duration-300 hover:-translate-y-1.5 hover:border-brand/50">
+        {project.pinned && (
+          <span className="absolute left-3 top-3 z-10 flex items-center gap-1 rounded-full border border-primary/30 bg-background/85 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-primary backdrop-blur-md">
+            <Pin className="h-3 w-3 fill-primary" />
+            Pinned
+          </span>
+        )}
         {thumbnail ? (
-          <div className="relative w-full aspect-[16/9] overflow-hidden bg-muted">
+          <div className="relative aspect-[16/9] w-full overflow-hidden bg-muted">
             <Image
               src={thumbnail}
               alt={project.title}
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-105"
             />
+            <div className="absolute inset-0 bg-gradient-to-t from-card/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
           </div>
         ) : (
-          <div className="relative w-full aspect-[16/9] bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+          <div className="relative flex aspect-[16/9] w-full items-center justify-center bg-gradient-to-br from-primary/20 to-accent/20">
             <span className="text-4xl font-black text-primary/30">{project.title.charAt(0)}</span>
           </div>
         )}

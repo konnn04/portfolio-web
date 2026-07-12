@@ -4,29 +4,52 @@
     "project": "Dự án",
     "projects": "Dự án",
     "blogs": "Bài viết",
-    "about": "Về tôi",
+    "about": "Tui là ai?",
     "about_me": "Bản thân",
     "donate": "Ủng hộ",
     "view_projects": "Dự án",
     "read_blogs": "Bài viết",
-    "view_projects_desc": "Khám phá dự án của tôi",
+    "view_projects_desc": "Khám phá dự án của tui",
     "read_blogs_desc": "Đọc các bài viết chia sẻ",
     "learn_more": "Bản thân",
-    "learn_more_desc": "Tìm hiểu thêm về tôi"
+    "learn_more_desc": "Tìm hiểu thêm về tui"
   },
   "theme": {
     "light": "Sáng",
     "dark": "Tối",
     "system": "Hệ thống"
   },
+  "sections": {
+    "home": "Trang chủ",
+    "about": "Giới thiệu",
+    "experience": "Kinh nghiệm",
+    "certificates": "Chứng chỉ",
+    "skills": "Kỹ năng",
+    "code": "Mã nguồn",
+    "projects": "Dự án",
+    "contact": "Liên hệ"
+  },
+  "code": {
+    "title": "Dấu ấn mã nguồn",
+    "subtitle": "Lấy trực tiếp từ hoạt động GitHub của tui.",
+    "repos": "Kho lưu trữ",
+    "followers": "Người theo dõi",
+    "stars": "Sao",
+    "contributions": "Đóng góp · 1 năm",
+    "top_langs": "Ngôn ngữ nổi bật",
+    "commit_grid": "Biểu đồ đóng góp",
+    "less": "Ít",
+    "more": "Nhiều",
+    "unavailable": "Chưa tải được thống kê GitHub lúc này."
+  },
   "hero": {
     "greeting": "Xin chào!",
-    "myName": "Mình là {fullName}",
+    "myName": "Tui là {fullName}",
     "role": "{role}",
     "location": "Đang ở {city}, {country}"
   },
   "blogs": {
-    "title": "Góc Chia Sẻ",
+    "title": "Góc chia sẻ",
     "description": "Những suy nghĩ, bài học và hướng dẫn về phát triển web, kỹ thuật phần mềm và nhiều điều khác.",
     "search_placeholder": "Tìm kiếm bài viết...",
     "search_button": "Tìm kiếm",
@@ -38,44 +61,66 @@
     "category_label": "Danh mục:",
     "tag_label": "Nhãn:",
     "read_more": "Đọc tiếp",
+    "min_read": "phút đọc",
+    "related_title": "Đọc thêm các bài khác?",
     "no_posts_title": "Không tìm thấy bài viết",
-    "no_posts_desc": "Chúng tôi không tìm thấy bài viết nào phù hợp với tiêu chí tìm kiếm của bạn."
+    "no_posts_desc": "Bạn chọn lọc khó tính quá, tui không có bài cho bạn đọc rồi!"
   },
   "projects": {
-    "title": "Dự Án Của Tôi",
-    "description": "Tổng hợp các dự án mà tôi đã xây dựng hoặc đóng góp.",
+    "title": "Dự án của tui",
+    "description": "Tổng hợp các dự án mà tui đã xây dựng hoặc đóng góp.",
     "technologies": "Công nghệ",
     "languages": "Ngôn ngữ",
     "contributors": "Đóng góp",
     "joined": "Tham gia",
-    "visit_website": "Truy cập trang web"
+    "visit_website": "Truy cập trang web",
+    "view_all": "Xem tất cả dự án",
+    "search_placeholder": "Tìm kiếm dự án...",
+    "clear_filters": "Xoá bộ lọc",
+    "no_results_title": "Không tìm thấy dự án",
+    "no_results_desc": "Thử từ khoá khác hoặc xoá bộ lọc."
+  },
+  "contact": {
+    "title": "Cùng nhau tạo nên điều thú vị",
+    "subtitle": "Bạn có ý tưởng, cơ hội hợp tác hay chỉ muốn chào hỏi? Hãy để lại lời nhắn cho tui nhé!",
+    "name": "Họ và tên",
+    "name_placeholder": "Tên của bạn",
+    "email": "Email",
+    "message": "Nội dung",
+    "message_placeholder": "Chia sẻ về dự án hoặc ý tưởng của bạn...",
+    "send": "Gửi lời nhắn",
+    "sending": "Đang gửi...",
+    "success": "Cảm ơn bạn! Lời nhắn đã được gửi đi.",
+    "rate_limited": "Bạn đã gửi lời nhắn trong hôm nay rồi. Vui lòng thử lại vào ngày mai.",
+    "error": "Có lỗi xảy ra. Vui lòng thử lại sau.",
+    "not_configured": "Máy chủ mail chưa được cấu hình. Vui lòng email trực tiếp cho tui."
   },
   "about": {
-    "title": "Về Tôi",
-    "description": "Hành trình, kinh nghiệm và các kỹ năng tôi đã trau dồi.",
+    "title": "Về tui",
+    "description": "Hành trình, kinh nghiệm và các kỹ năng tui đã tu luyện trong thời gian qua.",
     "education": "Học vấn",
     "experience": "Kinh nghiệm làm việc",
     "certificates": "Chứng chỉ",
-    "skills": "Kỹ năng của tôi",
-    "featured_projects": "Dự án Nổi Bật",
-    "view_all_projects": "Xem Tất Cả Dự Án",
-    "donate_cta_title": "Ủng hộ công việc của tôi",
-    "donate_cta_description": "Nếu bạn thấy nội dung hữu ích hoặc muốn ủng hộ các dự án mã nguồn mở của tôi, hãy mua tôi một ly cà phê.",
+    "skills": "Kỹ năng của tui",
+    "featured_projects": "Dự án nổi bật",
+    "view_all_projects": "Xem tất cả",
+    "donate_cta_title": "Ủng hộ công việc của tui",
+    "donate_cta_description": "Nếu bạn thấy nội dung hữu ích hoặc muốn ủng hộ các dự án mã nguồn mở của tui, hãy mua tui một ly cà phê.",
     "donate_cta_button": "Ủng hộ ngay",
     "present": "Hiện tại",
     "gpa": "Điểm trung bình (GPA)"
   },
   "donate": {
     "support_label": "Ủng hộ",
-    "title": "Ủng hộ công việc của tôi",
-    "description": "Nếu bạn muốn ủng hộ công việc mã nguồn mở của tôi hoặc mua tôi một ly cà phê, bạn có thể dùng các kênh sau.",
+    "title": "Ủng hộ công việc của tui",
+    "description": "Nếu bạn muốn ủng hộ công việc mã nguồn mở của tui hoặc mua tui một ly cà phê, bạn có thể dùng các kênh sau.",
     "support": "Ủng hộ",
     "account_number": "Số tài khoản",
     "visit_link": "Mở liên kết",
     "copy_info": "Dùng thông tin tài khoản bên trên để ủng hộ."
   },
   "github": {
-    "title": "Hoạt Động GitHub",
+    "title": "Hoạt động GitHub",
     "description": "Thống kê đóng góp mã nguồn mở và hoạt động phát triển của tôi.",
     "followers": "Người theo dõi",
     "repositories": "Kho lưu trữ",
@@ -87,5 +132,17 @@
   },
   "footer": {
     "introduce": "Đây là một dự án mã nguồn mở, bạn có thể tìm thấy mã nguồn trên"
+  },
+  "more": {
+    "hint": "Suỵt… nhấn tôi 5 lần",
+    "unlocked": "Đã mở khoá bí mật",
+    "kicker": "Phía sau màn hình",
+    "title": "Thêm về tôi",
+    "subtitle": "Những điều không nằm trong CV — nhấn avatar thêm 5 lần nữa để ẩn đi.",
+    "games": "Game tôi mê",
+    "hobbies": "Ngoài bàn phím",
+    "music": "Đang nghe",
+    "secret_projects": "Dự án ẩn",
+    "open_spotify": "Mở trên Spotify"
   }
 }

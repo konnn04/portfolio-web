@@ -6,8 +6,10 @@ import Image from "next/image";
 import { format } from "date-fns";
 import { Post } from "@/lib/posts";
 import { Badge } from "@/components/ui/badge";
+import { useLanguage } from "@/components/providers/providers";
 
 export function RelatedPosts({ currentSlug, categories }: { currentSlug: string; categories: string[] }) {
+  const { t } = useLanguage();
   const [related, setRelated] = useState<Post[]>([]);
 
   useEffect(() => {
@@ -47,7 +49,7 @@ export function RelatedPosts({ currentSlug, categories }: { currentSlug: string;
 
   return (
     <div className="mt-16 border-t pt-10">
-      <h3 className="text-2xl font-bold mb-6 tracking-tight">Đọc thêm các bài khác?</h3>
+      <h3 className="text-2xl font-bold mb-6 tracking-tight">{t("blogs.related_title")}</h3>
       <div className="grid gap-6 md:grid-cols-3">
         {related.map((post) => {
           const imageUrl = post.metadata.image?.startsWith("assets/") 

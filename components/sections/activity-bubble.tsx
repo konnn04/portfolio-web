@@ -6,11 +6,19 @@ import { Headphones, Gamepad2, ExternalLink } from "lucide-react";
 import type { DiscordActivity, DiscordData } from "@/types/discord";
 
 function formatElapsed(startMs: number): string {
-  const elapsed = Date.now() - startMs;
-  const mins = Math.floor(elapsed / 60000);
-  const secs = Math.floor((elapsed % 60000) / 1000);
-  if (mins > 0) return `${mins}m ${secs}s`;
-  return `${secs}s`;
+  let s = Math.max(0, Math.floor((Date.now() - startMs) / 1000));
+  const d = Math.floor(s / 86400);
+  s -= d * 86400;
+  const h = Math.floor(s / 3600);
+  s -= h * 3600;
+  const m = Math.floor(s / 60);
+  s -= m * 60;
+  const parts: string[] = [];
+  if (d) parts.push(`${d}d`);
+  if (h || d) parts.push(`${h}h`);
+  if (m || h || d) parts.push(`${m}m`);
+  parts.push(`${s}s`);
+  return parts.join(" ");
 }
 
 function getActivityThumbnail(act: DiscordActivity, discordData: DiscordData): string | null {
@@ -22,7 +30,6 @@ function getActivityThumbnail(act: DiscordActivity, discordData: DiscordData): s
     if (img.startsWith("mp:")) {
       return `https://media.discordapp.net/${img.slice(3)}`;
     }
-    // Use application_id instead of id for Discord CDN
     const appId = act.application_id || act.id;
     if (!appId) return null;
     return `https://cdn.discordapp.com/app-assets/${appId}/${img}.png`;

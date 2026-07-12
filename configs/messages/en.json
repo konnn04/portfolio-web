@@ -19,6 +19,29 @@
     "dark": "Dark",
     "system": "System"
   },
+  "sections": {
+    "home": "Home",
+    "about": "About",
+    "experience": "Experience",
+    "certificates": "Certificates",
+    "skills": "Skills",
+    "code": "Code",
+    "projects": "Projects",
+    "contact": "Contact"
+  },
+  "code": {
+    "title": "Source-code footprint",
+    "subtitle": "Pulled live from my GitHub activity.",
+    "repos": "Repositories",
+    "followers": "Followers",
+    "stars": "Stars",
+    "contributions": "Contributions · 1y",
+    "top_langs": "Top languages",
+    "commit_grid": "Contribution graph",
+    "less": "Less",
+    "more": "More",
+    "unavailable": "Couldn't load GitHub stats right now."
+  },
   "hero": {
     "greeting": "Hello!",
     "myName": "I'm a {fullName}",
@@ -38,6 +61,8 @@
     "category_label": "Category:",
     "tag_label": "Tag:",
     "read_more": "Read more",
+    "min_read": "min read",
+    "related_title": "Read more articles?",
     "no_posts_title": "No posts found",
     "no_posts_desc": "We couldn't find any posts matching your search criteria."
   },
@@ -48,7 +73,27 @@
     "languages": "Languages",
     "contributors": "Contributors",
     "joined": "Joined",
-    "visit_website": "Visit Website"
+    "visit_website": "Visit Website",
+    "view_all": "View all projects",
+    "search_placeholder": "Search projects...",
+    "clear_filters": "Clear filters",
+    "no_results_title": "No projects found",
+    "no_results_desc": "Try a different keyword or clear the filters."
+  },
+  "contact": {
+    "title": "Let's build something together",
+    "subtitle": "Have an idea, an opportunity, or just want to say hi? Drop me a message — I'd love to hear from you.",
+    "name": "Full name",
+    "name_placeholder": "Your name",
+    "email": "Email",
+    "message": "Message",
+    "message_placeholder": "Tell me about your project or idea...",
+    "send": "Send message",
+    "sending": "Sending...",
+    "success": "Thanks! Your message has been sent.",
+    "rate_limited": "You've already sent a message today. Please try again tomorrow.",
+    "error": "Something went wrong. Please try again later.",
+    "not_configured": "The mail server isn't configured yet. Please email me directly."
   },
   "about": {
     "title": "About Me",
@@ -87,5 +132,17 @@
   },
   "footer": {
     "introduce": "This is an open source project, you can find the source code on"
+  },
+  "more": {
+    "hint": "Psst… tap me 5 times",
+    "unlocked": "Secret unlocked",
+    "kicker": "Behind the screen",
+    "title": "More about me",
+    "subtitle": "The stuff that doesn't fit on a résumé — tap the avatar 5 more times to hide it again.",
+    "games": "Games I love",
+    "hobbies": "Off-keyboard",
+    "music": "On repeat",
+    "secret_projects": "Secret projects",
+    "open_spotify": "Open on Spotify"
   }
 }

@@ -68,7 +68,7 @@ A high-performance, aesthetically premium portfolio website built with **Next.js
 
 3. **Environment Setup**
 
-   The project reads personal information from `/configs/my-info.json`. Ensure your Discord ID is correctly configured for the Lanyard integration.
+   The project reads all identity, feature flags, and personal information from `configs/data/my-info.ts` (the `site` and `profile` exports). Ensure your Discord ID is correctly configured for the Lanyard integration.
 
 4. **Launch Development Server**
 
@@ -95,8 +95,9 @@ portfolio-web/
 │   └── providers/        # i18n and Global contexts
 ├── configs/              # Data & Messages
 │   ├── messages/         # i18n JSON (en, vi)
-│   ├── my-projects.json  # Portfolio data
-│   └── my-info.json      # Personal profile configuration
+│   └── data/
+│       ├── my-projects.ts # Portfolio data (typed)
+│       └── my-info.ts     # Site identity + profile (typed, white-label here)
 ├── lib/                  # Core logic & Utility functions
 ├── types/                # TypeScript definitions
 └── public/               # Static assets & images
@@ -116,9 +117,10 @@ pnpm run precommit    # Manual post-validation script
 
 Most of the content is data-driven. You can customize the site by editing:
 
-- `configs/data/my-info.json`: Personal details, socials, and avatar.
-- `configs/data/my-projects.json`: Projects list and image paths.
+- `configs/data/my-info.ts`: `site` (name, url, GitHub/Discord handles, feature flags) and `profile` (bio, socials, education, experience, skills, certificates).
+- `configs/data/my-projects.ts`: Projects list and image paths.
 - `configs/messages/`: Translation strings for all UI elements.
+- `app/globals.css`: The single `--brand` accent token (light + dark).
 
 ---
 

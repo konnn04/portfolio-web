@@ -1,6 +1,5 @@
-import myInfo from "@/configs/data/my-info.json";
+import { profile } from "@/configs/data/my-info";
 
 export function useMyInfo() {
-  const { profile } = myInfo;
   return { profile };
 }

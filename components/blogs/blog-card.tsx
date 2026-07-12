@@ -4,9 +4,16 @@ import Link from "next/link";
 import Image from "next/image";
 import { format } from "date-fns";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Clock } from "lucide-react";
 import { Post } from "@/lib/posts";
 import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/components/providers/providers";
+
+/** ~200 words/min reading-speed estimate from the raw content. */
+function readingMinutes(content?: string) {
+  const words = (content || "").trim().split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.ceil(words / 200));
+}
 
 interface BlogCardProps {
   post: Post;
@@ -21,6 +28,13 @@ export function BlogCard({ post, viewMode }: BlogCardProps) {
   const { title, slug, date, description, image, categories } = post.metadata;
   const imageUrl = image?.startsWith("assets/") ? `/blogs/${slug}/${image}` : image;
   const formattedDate = date ? format(new Date(date), "MMMM dd, yyyy") : "";
+  const readMins = readingMinutes(post.content);
+  const readLabel = (
+    <span className="inline-flex items-center gap-1 whitespace-nowrap">
+      <Clock className="h-3.5 w-3.5" />
+      {readMins} {t("blogs.min_read")}
+    </span>
+  );
 
   const handleTagClick = (e: React.MouseEvent<HTMLSpanElement>, tag: string) => {
     e.preventDefault();
@@ -47,7 +61,10 @@ export function BlogCard({ post, viewMode }: BlogCardProps) {
                   {cat}
                 </Badge>
               ))}
-              <span className="text-sm text-muted-foreground ml-auto">{formattedDate}</span>
+              <div className="ml-auto flex items-center gap-3 text-sm text-muted-foreground">
+                {readLabel}
+                <span>{formattedDate}</span>
+              </div>
             </div>
             <h3 className="text-2xl font-bold tracking-tight group-hover:text-primary transition-colors">
               {title}
@@ -91,7 +108,10 @@ export function BlogCard({ post, viewMode }: BlogCardProps) {
           </h3>
           <p className="text-muted-foreground line-clamp-3 flex-1">{description}</p>
           <div className="mt-auto pt-4 flex items-center justify-between border-t border-border/50">
-            <span className="text-sm text-muted-foreground">{formattedDate}</span>
+            <div className="flex items-center gap-3 text-sm text-muted-foreground">
+              <span>{formattedDate}</span>
+              {readLabel}
+            </div>
             <span className="text-sm font-medium text-primary group-hover:underline">{t("blogs.read_more")} &rarr;</span>
           </div>
         </div>

@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import { siteConfig } from "@/lib/site-config";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
-  const username = searchParams.get("username") || "konnn04";
+  const username = searchParams.get("username") || siteConfig.githubUsername;
   const url = `https://profile-summary-for-github.com/api/user/${username}`;
 
   try {

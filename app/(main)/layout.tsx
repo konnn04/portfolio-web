@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
-import { Inter, Roboto_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono, Be_Vietnam_Pro } from "next/font/google";
 import { cookies, headers } from "next/headers";
 import "../globals.css";
 
 import { Providers } from "@/components/providers/providers";
+import { SiteBackground } from "@/components/layouts/site-background";
 import { Header } from "@/components/layouts/header";
+import { FirstLoader } from "@/components/layouts/first-loader";
+import { SectionProgress } from "@/components/layouts/section-progress";
 import { Footer } from "@/components/layouts/footer";
 import { MobileDock } from "@/components/layouts/mobile-dock";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -17,9 +20,15 @@ const inter = Inter({
   subsets: ["latin", "vietnamese"],
 });
 
-const robotoMono = Roboto_Mono({
+const jetbrainsMono = JetBrains_Mono({
   variable: "--font-mono",
   subsets: ["latin", "vietnamese"],
+});
+
+const beVietnamPro = Be_Vietnam_Pro({
+  variable: "--font-display",
+  subsets: ["latin", "vietnamese"],
+  weight: ["500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -30,7 +39,8 @@ export const metadata: Metadata = {
   },
   description: siteConfig.description,
   keywords: [
-    "Konnn04",
+    siteConfig.name,
+    siteConfig.author,
     "portfolio",
     "web development",
     "software engineering",
@@ -88,12 +98,15 @@ export default async function RootLayout({
   return (
     <html lang={lang} suppressHydrationWarning>
       <body
-        className={`${inter.variable} ${robotoMono.variable} antialiased min-h-screen flex flex-col`}
+        className={`${inter.variable} ${jetbrainsMono.variable} ${beVietnamPro.variable} antialiased min-h-screen flex flex-col`}
       >
         <Providers initialLang={lang}>
           <HeaderProvider>
             <TooltipProvider>
+              <FirstLoader />
+              <SiteBackground />
               <Header />
+              <SectionProgress />
               <main className="flex-1 mt-16 mb-20 md:mb-0">{children}</main>
               <Footer />
               <MobileDock />

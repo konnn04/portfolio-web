@@ -1,9 +1,10 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { ScrollReveal } from "@/components/ui/scroll-reveal";
 import { useLanguage } from "@/components/providers/providers";
 import { format, parseISO } from "date-fns";
-import { Calendar, Briefcase, GraduationCap, ArrowUpRight, Award, ChevronRight, FileBadge } from "lucide-react";
+import { Briefcase, GraduationCap, ArrowUpRight, Award, ChevronRight, FileBadge } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
@@ -33,9 +34,55 @@ interface AboutTimelineProps {
   items: TimelineItem[];
   title: string;
   icon: "work" | "education" | "certificate";
+  hideHeader?: boolean;
 }
 
-export function AboutTimeline({ items, title, icon }: AboutTimelineProps) {
+export function WireCube({ icon: Icon }: { icon: React.ElementType }) {
+  const [rot, setRot] = useState({ x: -20, y: 26 });
+
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => {
+      const nx = (e.clientX / window.innerWidth) * 2 - 1;
+      const ny = (e.clientY / window.innerHeight) * 2 - 1;
+      setRot({ x: -20 - ny * 16, y: 26 + nx * 26 });
+    };
+    window.addEventListener("mousemove", onMove);
+    return () => window.removeEventListener("mousemove", onMove);
+  }, []);
+
+  const Z = 28;
+  const faceBase =
+    "absolute inset-0 border border-brand/50 bg-background/70 backdrop-blur-sm [backface-visibility:hidden]";
+  const faces = [
+    { t: `translateZ(${Z}px)`, front: true },
+    { t: `rotateY(180deg) translateZ(${Z}px)` },
+    { t: `rotateY(90deg) translateZ(${Z}px)` },
+    { t: `rotateY(-90deg) translateZ(${Z}px)` },
+    { t: `rotateX(90deg) translateZ(${Z}px)` },
+    { t: `rotateX(-90deg) translateZ(${Z}px)` },
+  ];
+
+  return (
+    <div className="h-14 w-14 shrink-0 [perspective:640px]">
+      <div
+        className="relative h-full w-full [transform-style:preserve-3d]"
+        style={{ transform: `rotateX(${rot.x}deg) rotateY(${rot.y}deg)`, transition: "transform 120ms linear" }}
+      >
+        {faces.map((f, i) => (
+          <span
+            key={i}
+            className={`${faceBase} ${f.front ? "flex items-center justify-center" : ""}`}
+            style={{ transform: f.t }}
+          >
+            {f.front && <Icon className="h-6 w-6 text-brand" />}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function AboutTimeline({ items, title, icon, hideHeader = false }: AboutTimelineProps) {
   const { lang, t } = useLanguage();
 
   const getLocalized = (field: string | Record<string, string> | undefined) => {
@@ -47,140 +94,152 @@ export function AboutTimeline({ items, title, icon }: AboutTimelineProps) {
   const formatTimelineDate = (dateStr: string | undefined) => {
     if (!dateStr) return t("about.present");
     try {
-      const date = parseISO(`${dateStr}-01`);
-      return format(date, "MM/yyyy");
+      return format(parseISO(`${dateStr}-01`), "MM/yyyy");
     } catch {
       return dateStr;
     }
   };
 
-  const IconMap = {
-    work: Briefcase,
-    education: GraduationCap,
-    certificate: FileBadge,
-  };
+  const IconMap = { work: Briefcase, education: GraduationCap, certificate: FileBadge };
   const MainIcon = IconMap[icon];
 
   return (
-    <section className="mb-16 w-full">
-      <ScrollReveal>
-        <div className="flex items-center gap-4 mb-10">
-          <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
-            <MainIcon className="w-6 h-6 text-primary" />
+    <section className="w-full">
+      {!hideHeader && (
+        <ScrollReveal>
+          <div className="mb-12 flex items-center gap-4">
+            <WireCube icon={MainIcon} />
+            <h3 className="text-2xl font-bold tracking-tight md:text-3xl">{title}</h3>
           </div>
-          <h3 className="text-3xl font-bold tracking-tight">{title}</h3>
-        </div>
-      </ScrollReveal>
+        </ScrollReveal>
+      )}
 
-      <div className="relative border-l-2 border-primary/20 ml-6 md:ml-8 space-y-12 pb-4">
-        {items.map((item, idx) => (
-          <div key={item.id} className="relative pl-8 md:pl-12">
-            {/* Timeline Dot */}
-            <ScrollReveal 
-              delay={idx * 0.15 + 0.1}
-              className="absolute -left-[11px] top-1.5 w-5 h-5 rounded-full bg-background border-4 border-primary shadow-[0_0_15px_rgba(var(--primary-rgb),0.5)] z-10"
-            >
-               <div />
-            </ScrollReveal>
+      <div className="relative mx-auto max-w-4xl">
+        <span
+          aria-hidden
+          className="absolute left-[7px] top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-border to-transparent md:left-1/2"
+        />
 
-            {/* Content card */}
-            <ScrollReveal direction="up" delay={idx * 0.15} className="w-full">
-              <motion.div 
-                whileHover={{ y: -5 }}
-                className="group relative bg-secondary/30 hover:bg-secondary/50 backdrop-blur-sm border rounded-2xl p-6 transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 w-full"
-              >
-                <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-4">
-                  <div>
-                    <h4 className="text-xl font-bold text-foreground">
-                      {getLocalized(item.title)}
-                    </h4>
-                    <div className="flex flex-wrap items-center gap-3 mt-1">
-                      <span className="text-lg font-medium text-primary inline-block">
-                        {getLocalized(item.subtitle)}
-                      </span>
+        <div className="flex flex-col gap-8">
+          {items.map((item, idx) => {
+            const cardRight = idx % 2 === 0; 
+            const dateLabel =
+              item.type === "certificate"
+                ? formatTimelineDate(item.startDate)
+                : `${formatTimelineDate(item.startDate)} — ${formatTimelineDate(item.endDate)}`;
+
+            return (
+              <div key={item.id} className="relative md:grid md:grid-cols-2 md:items-start md:gap-10">
+                <ScrollReveal
+                  delay={idx * 0.12 + 0.05}
+                  className="absolute left-0 top-2 z-10 h-3.5 w-3.5 -translate-x-0 rotate-45 border border-brand bg-background shadow-[0_0_10px_var(--brand)] md:left-1/2 md:-translate-x-1/2"
+                >
+                  <div />
+                </ScrollReveal>
+
+                <ScrollReveal
+                  direction={cardRight ? "right" : "left"}
+                  delay={idx * 0.12}
+                  className={`mb-2 pl-8 md:mb-0 md:pl-0 ${
+                    cardRight ? "md:col-start-1 md:pr-12 md:text-right" : "md:col-start-2 md:order-2 md:pl-12 md:text-left"
+                  }`}
+                >
+                  <div
+                    className={`inline-flex flex-col ${
+                      cardRight ? "md:items-end" : "md:items-start"
+                    }`}
+                  >
+                    <span className="font-mono text-sm font-semibold text-brand">{dateLabel}</span>
+                    <span className="mt-0.5 text-xs text-muted-foreground">{getLocalized(item.subtitle)}</span>
+                  </div>
+                </ScrollReveal>
+
+                <ScrollReveal
+                  direction="up"
+                  delay={idx * 0.12}
+                  className={`pl-8 md:pl-0 ${
+                    cardRight ? "md:col-start-2 md:pl-12" : "md:col-start-1 md:order-1 md:pr-12"
+                  }`}
+                >
+                  <motion.div
+                    whileHover={{ y: -4 }}
+                    className="card-3d group relative rounded-xl border bg-secondary/30 p-4 backdrop-blur-sm transition-colors duration-300 hover:border-brand/40 hover:bg-secondary/50"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <h4 className="text-base font-bold leading-snug text-foreground">{getLocalized(item.title)}</h4>
                       {item.gpa && (
-                        <div className="flex items-center gap-1.5 bg-accent/20 text-accent-foreground font-semibold px-2.5 py-0.5 rounded-full text-sm border border-accent/30">
-                          <Award className="w-4 h-4" />
-                          <span>{t("about.gpa")}: {item.gpa}</span>
-                        </div>
+                        <span className="flex shrink-0 items-center gap-1 rounded-full border border-brand/30 bg-brand/10 px-2 py-0.5 text-xs font-semibold text-brand">
+                          <Award className="h-3 w-3" />
+                          {item.gpa}
+                        </span>
                       )}
                     </div>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground bg-background/80 border rounded-full px-4 py-1.5 w-fit h-fit shadow-sm">
-                    <Calendar className="w-4 h-4 text-primary" />
-                    <span>{item.type === 'certificate' ? formatTimelineDate(item.startDate) : `${formatTimelineDate(item.startDate)} — ${formatTimelineDate(item.endDate)}`}</span>
-                  </div>
-                </div>
 
-                {item.description && (
-                  <p className="text-muted-foreground leading-relaxed mt-4">
-                     {getLocalized(item.description)}
-                  </p>
-                )}
+                    {item.description && (
+                      <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">
+                        {getLocalized(item.description)}
+                      </p>
+                    )}
 
-                {item.links && item.links.length > 0 && (
-                  <div className="flex flex-wrap gap-3 mt-5">
-                    {item.links.map((url, i) => (
-                      <Link 
-                        key={i} 
-                        href={url} 
-                        target="_blank" 
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-1.5 text-sm font-medium text-foreground hover:text-primary hover:bg-primary/10 transition-colors bg-background border px-4 py-1.5 rounded-full shadow-sm"
-                      >
-                         {new URL(url).hostname}
-                         <ArrowUpRight className="w-3.5 h-3.5" />
-                      </Link>
-                    ))}
-                  </div>
-                )}
-                
-                {/* Nested Activities Timeline */}
-                {item.activities && item.activities.length > 0 && (
-                   <div className="mt-8 pt-6 border-t border-primary/10 space-y-6">
-                      <h5 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-4 ml-1">Activities & Honors</h5>
-                      <div className="relative border-l-2 border-primary/10 ml-4 space-y-8 pb-2">
-                        {item.activities.map((act) => (
-                           <div key={act.id} className="relative pl-6 group/act">
-                              <div className="absolute -left-[7px] top-2 w-3 h-3 rounded-full bg-background border-2 border-primary/50 group-hover/act:bg-primary/50 transition-colors z-10" />
-                              <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 mb-2">
-                                <h6 className="text-base font-semibold text-foreground/90 flex items-center gap-2">
-                                  {getLocalized(act.name)}
-                                </h6>
-                                <span className="text-xs font-medium text-muted-foreground whitespace-nowrap bg-background/50 px-2 py-1 rounded-md border">
-                                  {formatTimelineDate(act.startDate)} — {formatTimelineDate(act.endDate)}
-                                </span>
-                              </div>
-                              {act.description && (
-                                <p className="text-sm text-muted-foreground mt-1">
-                                  {getLocalized(act.description)}
-                                </p>
-                              )}
-                              {act.links && act.links.length > 0 && (
-                                <div className="flex flex-wrap gap-2 mt-3">
-                                  {act.links.map((url, i) => (
-                                    <Link 
-                                      key={i} 
-                                      href={url} 
-                                      target="_blank" 
-                                      rel="noreferrer"
-                                      className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-primary transition-colors bg-background/50 border border-primary/10 px-2 py-1 rounded-md"
-                                    >
-                                      {new URL(url).hostname}
-                                      <ChevronRight className="w-3 h-3" />
-                                    </Link>
-                                  ))}
-                                </div>
-                              )}
-                           </div>
+                    {item.links && item.links.length > 0 && (
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        {item.links.map((url, i) => (
+                          <Link
+                            key={i}
+                            href={url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1 rounded-full border bg-background px-3 py-1 text-xs font-medium text-foreground transition-colors hover:border-brand/40 hover:text-brand"
+                          >
+                            {new URL(url).hostname.replace(/^www\./, "")}
+                            <ArrowUpRight className="h-3 w-3" />
+                          </Link>
                         ))}
                       </div>
-                   </div>
-                )}
-              </motion.div>
-            </ScrollReveal>
-          </div>
-        ))}
+                    )}
+
+                    {item.activities && item.activities.length > 0 && (
+                      <div className="mt-4 space-y-3 border-t border-border/60 pt-3">
+                        {item.activities.map((act) => (
+                          <div key={act.id} className="relative pl-3">
+                            <span className="absolute left-0 top-1.5 h-1.5 w-1.5 rounded-full bg-brand/60" />
+                            <div className="flex flex-wrap items-baseline justify-between gap-x-2">
+                              <h6 className="text-sm font-semibold text-foreground/90">{getLocalized(act.name)}</h6>
+                              <span className="font-mono text-[10px] text-muted-foreground">
+                                {formatTimelineDate(act.startDate)} — {formatTimelineDate(act.endDate)}
+                              </span>
+                            </div>
+                            {act.description && (
+                              <p className="mt-1 whitespace-pre-line text-xs leading-relaxed text-muted-foreground">
+                                {getLocalized(act.description)}
+                              </p>
+                            )}
+                            {act.links && act.links.length > 0 && (
+                              <div className="mt-1.5 flex flex-wrap gap-1.5">
+                                {act.links.map((url, i) => (
+                                  <Link
+                                    key={i}
+                                    href={url}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="inline-flex items-center gap-1 text-[11px] font-medium text-muted-foreground transition-colors hover:text-brand"
+                                  >
+                                    {new URL(url).hostname.replace(/^www\./, "")}
+                                    <ChevronRight className="h-3 w-3" />
+                                  </Link>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </motion.div>
+                </ScrollReveal>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

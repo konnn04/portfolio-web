@@ -33,10 +33,13 @@
   --color-secondary: var(--secondary);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary: var(--primary);
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --font-display: var(--font-display);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -47,110 +50,195 @@
 }
 
 :root {
-  /* Nền trắng sáng, text đen xám */
+  /* Monochrome — white / black / gray */
   --background: oklch(0.99 0 0);
-  --foreground: oklch(0.15 0.02 275);
-  
+  --foreground: oklch(0.16 0 0);
+
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.15 0.02 275);
+  --card-foreground: oklch(0.16 0 0);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.15 0.02 275);
-  
-  /* CÓ LÕI: Màu đỏ chủ đạo hiện đại */
-  --primary: oklch(0.63 0.23 30); /* Đậm, nổi bật */
-  --primary-foreground: oklch(0.98 0.02 30); /* Chữ trắng trên nền primary */
-  
-  /* Các item phụ trợ: đỏ nhạt / trung tính */
-  --secondary: oklch(0.95 0.03 30);
-  --secondary-foreground: oklch(0.28 0.05 30);
-  
-  --muted: oklch(0.95 0.02 30);
-  --muted-foreground: oklch(0.45 0.04 30);
-  
-  --accent: oklch(0.95 0.04 30);
-  --accent-foreground: oklch(0.28 0.05 30);
-  
-  --destructive: oklch(0.577 0.245 27.325); /* Giữ màu đỏ lỗi */
-  
-  --border: oklch(0.9 0.02 275);
-  --input: oklch(0.9 0.02 275);
-  --ring: oklch(0.45 0.2 275); /* Focus ring cùng màu primary */
-  
-  --chart-1: oklch(0.809 0.105 251.813);
-  --chart-2: oklch(0.623 0.214 259.815);
-  --chart-3: oklch(0.546 0.245 262.881);
-  --chart-4: oklch(0.488 0.243 264.376);
-  --chart-5: oklch(0.424 0.199 265.638);
-  
+  --popover-foreground: oklch(0.16 0 0);
+
+  /* Accent: near-black */
+  --primary: oklch(0.2 0 0);
+  --primary-foreground: oklch(0.98 0 0);
+
+  /* Brand accent — the one splash of colour on the monochrome canvas (orange-red) */
+  --brand: oklch(0.585 0.19 33);
+  --brand-foreground: oklch(0.99 0.02 40);
+
+  --secondary: oklch(0.96 0 0);
+  --secondary-foreground: oklch(0.26 0 0);
+
+  --muted: oklch(0.96 0 0);
+  --muted-foreground: oklch(0.44 0 0);
+
+  --accent: oklch(0.94 0 0);
+  --accent-foreground: oklch(0.26 0 0);
+
+  --destructive: oklch(0.577 0.245 27.325); /* red kept for error states only */
+
+  --border: oklch(0.9 0 0);
+  --input: oklch(0.9 0 0);
+  --ring: oklch(0.44 0 0);
+
+  --chart-1: oklch(0.28 0 0);
+  --chart-2: oklch(0.42 0 0);
+  --chart-3: oklch(0.56 0 0);
+  --chart-4: oklch(0.7 0 0);
+  --chart-5: oklch(0.82 0 0);
+
   --radius: 0.625rem;
-  
+
   --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.15 0.02 275);
-  --sidebar-primary: oklch(0.45 0.2 275);
+  --sidebar-foreground: oklch(0.16 0 0);
+  --sidebar-primary: oklch(0.2 0 0);
   --sidebar-primary-foreground: oklch(0.98 0 0);
-  --sidebar-accent: oklch(0.95 0.04 275);
-  --sidebar-accent-foreground: oklch(0.3 0.1 275);
-  --sidebar-border: oklch(0.9 0.02 275);
-  --sidebar-ring: oklch(0.45 0.2 275);
+  --sidebar-accent: oklch(0.94 0 0);
+  --sidebar-accent-foreground: oklch(0.26 0 0);
+  --sidebar-border: oklch(0.9 0 0);
+  --sidebar-ring: oklch(0.44 0 0);
 }
 
 .dark {
-  /* Nền tối có ám đỏ cực nhẹ tạo độ sâu (đen hơn, hiện đại hơn) */
-  --background: oklch(0.12 0.01 260); 
-  --foreground: oklch(0.96 0.01 260); /* Text trắng xám hiện đại */
-  
-  --card: oklch(0.16 0.01 260);
-  --card-foreground: oklch(0.96 0.01 260);
-  --popover: oklch(0.17 0.01 260);
-  --popover-foreground: oklch(0.96 0.01 260);
-  
-  /* Primary màu đỏ sáng nổi bật */
-  --primary: oklch(0.67 0.24 30);
-  --primary-foreground: oklch(0.98 0.02 30); 
-  
-  /* Các màu phụ trợ cho Dark mode */
-  --secondary: oklch(0.22 0.02 260);
-  --secondary-foreground: oklch(0.82 0.02 260);
-  
-  --muted: oklch(0.20 0.01 260);
-  --muted-foreground: oklch(0.70 0.01 260);
-  
-  --accent: oklch(0.22 0.02 30);
-  --accent-foreground: oklch(0.94 0.01 260);
-  
+  /* Monochrome dark — near-black background, white/gray accents */
+  --background: oklch(0.13 0 0);
+  --foreground: oklch(0.96 0 0);
+
+  --card: oklch(0.17 0 0);
+  --card-foreground: oklch(0.96 0 0);
+  --popover: oklch(0.18 0 0);
+  --popover-foreground: oklch(0.96 0 0);
+
+  /* Accent: near-white */
+  --primary: oklch(0.92 0 0);
+  --primary-foreground: oklch(0.18 0 0);
+
+  /* Brand accent — brighter orange-red so it glows on the dark canvas */
+  --brand: oklch(0.68 0.2 34);
+  --brand-foreground: oklch(0.16 0.03 34);
+
+  --secondary: oklch(0.24 0 0);
+  --secondary-foreground: oklch(0.85 0 0);
+
+  --muted: oklch(0.22 0 0);
+  --muted-foreground: oklch(0.68 0 0);
+
+  --accent: oklch(0.26 0 0);
+  --accent-foreground: oklch(0.95 0 0);
+
   --destructive: oklch(0.704 0.191 22.216);
-  
-  --border: oklch(1 0 0 / 15%);
-  --input: oklch(1 0 0 / 20%);
-  --ring: oklch(0.65 0.22 25);
-  
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  
-  --sidebar: oklch(0.15 0.005 25);
-  --sidebar-foreground: oklch(0.98 0.005 25);
-  --sidebar-primary: oklch(0.65 0.22 25);
-  --sidebar-primary-foreground: oklch(0.98 0.02 25);
-  --sidebar-accent: oklch(0.20 0.01 25);
-  --sidebar-accent-foreground: oklch(0.9 0.01 25);
-  --sidebar-border: oklch(1 0 0 / 15%);
-  --sidebar-ring: oklch(0.65 0.22 25);
+
+  --border: oklch(1 0 0 / 14%);
+  --input: oklch(1 0 0 / 18%);
+  --ring: oklch(0.7 0 0);
+
+  --chart-1: oklch(0.92 0 0);
+  --chart-2: oklch(0.78 0 0);
+  --chart-3: oklch(0.64 0 0);
+  --chart-4: oklch(0.5 0 0);
+  --chart-5: oklch(0.36 0 0);
+
+  --sidebar: oklch(0.15 0 0);
+  --sidebar-foreground: oklch(0.96 0 0);
+  --sidebar-primary: oklch(0.92 0 0);
+  --sidebar-primary-foreground: oklch(0.18 0 0);
+  --sidebar-accent: oklch(0.26 0 0);
+  --sidebar-accent-foreground: oklch(0.95 0 0);
+  --sidebar-border: oklch(1 0 0 / 14%);
+  --sidebar-ring: oklch(0.7 0 0);
 }
 
 @layer base {
   html {
-    scroll-behavior: smooth !important;
+    scroll-behavior: smooth;
+    scrollbar-color: color-mix(in oklch, var(--primary) 60%, transparent) transparent;
   }
   * {
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
   }
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display), var(--font-sans);
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  ::selection {
+    background: var(--primary);
+    color: var(--primary-foreground);
+  }
+  :focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  /* Refined custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: color-mix(in oklch, var(--primary) 55%, transparent);
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+    background-clip: content-box;
+  }
+}
+
+@layer components {
+  /* Real extruded depth: stacked shadows stepped diagonally (down-right) build a
+     solid side wall, so the card reads like a thick plaque you can see the edge
+     of — not just a bottom border. Fixed short depth, no mouse parallax. */
+  .card-3d {
+    --c3d-edge: color-mix(in oklch, var(--foreground) 30%, var(--background));
+    box-shadow:
+      1px 1px 0 0 var(--c3d-edge),
+      2px 2px 0 0 var(--c3d-edge),
+      3px 3px 0 0 var(--c3d-edge),
+      4px 4px 0 0 var(--c3d-edge),
+      5px 5px 0 0 var(--c3d-edge),
+      6px 6px 0 0 var(--c3d-edge),
+      7px 7px 0 0 var(--c3d-edge),
+      8px 8px 0 0 var(--c3d-edge),
+      14px 18px 24px -6px rgba(0, 0, 0, 0.5);
+    transition: box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1), transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  /* filled contribution cell: a tiny solid block with a short extruded edge */
+  .commit-cube {
+    box-shadow: 1.5px 1.5px 0 0 color-mix(in oklch, var(--brand) 45%, var(--background));
+  }
+  .card-3d:hover {
+    --c3d-edge: color-mix(in oklch, var(--brand) 45%, var(--background));
+    transform: translate(-2px, -2px);
+    box-shadow:
+      1px 1px 0 0 var(--c3d-edge),
+      2px 2px 0 0 var(--c3d-edge),
+      3px 3px 0 0 var(--c3d-edge),
+      4px 4px 0 0 var(--c3d-edge),
+      5px 5px 0 0 var(--c3d-edge),
+      6px 6px 0 0 var(--c3d-edge),
+      7px 7px 0 0 var(--c3d-edge),
+      8px 8px 0 0 var(--c3d-edge),
+      9px 9px 0 0 var(--c3d-edge),
+      10px 10px 0 0 var(--c3d-edge),
+      18px 22px 30px -6px rgba(0, 0, 0, 0.6);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
   html {
-    @apply font-sans;
+    scroll-behavior: auto;
   }
 }

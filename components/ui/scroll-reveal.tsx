@@ -35,9 +35,30 @@ export function ScrollReveal({
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, ...initial }}
-      animate={isInView ? { opacity: 1, x: 0, y: 0 } : { opacity: 0, ...initial }}
-      transition={{ duration, delay, ease: "easeOut" }}
+      initial={{ opacity: 0, scale: 0.985, ...initial }}
+      animate={
+        isInView
+          ? {
+              opacity: 1,
+              x: 0,
+              y: 0,
+              scale: 1,
+              // a brief brand glow that follows the real (rounded) silhouette,
+              // not the wrapper box — drop-shadow respects the content alpha.
+              filter: [
+                "drop-shadow(0 0 0px rgba(255,90,42,0))",
+                "drop-shadow(0 0 14px rgba(255,90,42,0.5))",
+                "drop-shadow(0 0 0px rgba(255,90,42,0))",
+              ],
+            }
+          : { opacity: 0, scale: 0.985, ...initial }
+      }
+      transition={{
+        duration,
+        delay,
+        ease: "easeOut",
+        filter: { duration: 0.9, delay, times: [0, 0.5, 1], ease: "easeOut" },
+      }}
       className={className}
     >
       {children}
