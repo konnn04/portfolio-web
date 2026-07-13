@@ -78,22 +78,41 @@ export function SiteBackground() {
       }
     };
 
-    const tick = () => {
-      offset += 0.28; // slow, elegant drift
+    // Cap to ~30fps: the drift is slow, so a full-window redraw every animation
+    // frame is pure waste on weak GPUs. Drawn frames advance twice as far to
+    // keep the same visual speed.
+    const FRAME_MS = 1000 / 30;
+    let last = 0;
+    const tick = (now: number) => {
+      raf = requestAnimationFrame(tick);
+      if (now - last < FRAME_MS) return;
+      last = now;
+      offset += 0.56; // slow, elegant drift (2× per drawn frame @30fps)
       draw();
+    };
+
+    const start = () => {
+      if (reduceMotion || raf) return;
+      last = 0;
       raf = requestAnimationFrame(tick);
     };
+    const stop = () => {
+      cancelAnimationFrame(raf);
+      raf = 0;
+    };
+    // Don't animate a background nobody is looking at.
+    const onVisibility = () => (document.hidden ? stop() : start());
 
     resize();
     draw();
-    if (!reduceMotion) {
-      raf = requestAnimationFrame(tick);
-    }
+    start();
 
     window.addEventListener("resize", resize);
+    document.addEventListener("visibilitychange", onVisibility);
     return () => {
-      cancelAnimationFrame(raf);
+      stop();
       window.removeEventListener("resize", resize);
+      document.removeEventListener("visibilitychange", onVisibility);
     };
   }, []);
 

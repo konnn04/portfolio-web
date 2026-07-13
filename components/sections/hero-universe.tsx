@@ -4,14 +4,14 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import Image from "next/image";
 import * as THREE from "three";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, X, Heart, RotateCcw, ChevronDown, Rocket, MousePointer2, Zap } from "lucide-react";
+import { Play, X, Heart, RotateCcw, ChevronDown, Rocket, MousePointer2, Zap, Volume2, VolumeX, ArrowBigUpDash } from "lucide-react";
 import { useLanguage } from "@/components/providers/providers";
 import { useMyInfo } from "@/hooks/use-my-info";
 import { useTypewriter } from "@/hooks/use-typewriter";
 import { siteConfig } from "@/lib/site-config";
 
 type Phase = "idle" | "intro" | "playing" | "over";
-type WeaponKind = "single" | "light" | "bomb" | "laser" | "spray";
+type WeaponKind = "single" | "light" | "bomb" | "laser" | "spray" | "polygon" | "wave";
 
 const MAX_LIVES = 3;
 const MAX_POWER = 12;
@@ -20,17 +20,25 @@ const BG = 0x05060d;
 const EDGE = 0xff5a2a; // orange-red brand
 const EDGE_BRIGHT = 0xff9a5c;
 const WHITE = 0xeef3f8;
+const BLUE = 0x4aa8ff; // armored asteroid — 2 hits
+const PURPLE = 0xb06bff; // armored asteroid — 3 hits
 
-const WEAPONS: WeaponKind[] = ["single", "light", "bomb", "laser", "spray"];
+const WEAPONS: WeaponKind[] = ["single", "light", "bomb", "laser", "spray", "polygon", "wave"];
 const WEAPON_META: Record<
   WeaponKind,
-  { label: string; rate: number; speed: number; dmg: number; color: number; size: number; pierce?: boolean; aoe?: number; pellets?: number; spread?: number; long?: boolean }
+  {
+    label: string; rate: number; speed: number; dmg: number; color: number; size: number;
+    pierce?: boolean; aoe?: number; pellets?: number; spread?: number; long?: boolean;
+    poly?: boolean; ring?: boolean; grow?: number;
+  }
 > = {
   single: { label: "ĐẠN ĐƠN", rate: 0.17, speed: 175, dmg: 1, color: WHITE, size: 0.18 },
   light: { label: "ĐẠN ÁNH SÁNG", rate: 0.1, speed: 250, dmg: 1, color: EDGE_BRIGHT, size: 0.14 },
   bomb: { label: "ĐẠN BOM", rate: 0.44, speed: 120, dmg: 3, color: 0xffcf6a, size: 0.34, aoe: 7 },
   laser: { label: "ĐẠN LAZER", rate: 0.24, speed: 340, dmg: 2, color: EDGE, size: 0.12, pierce: true, long: true },
   spray: { label: "ĐẠN CHÙM", rate: 0.3, speed: 165, dmg: 1, color: WHITE, size: 0.13, pellets: 3, spread: 0.09 },
+  polygon: { label: "ĐẠN ĐA GIÁC", rate: 0.5, speed: 125, dmg: 4, color: EDGE_BRIGHT, size: 0.55, aoe: 5, poly: true },
+  wave: { label: "SÓNG ÂM", rate: 0.6, speed: 95, dmg: 1, color: 0x8fd0ff, size: 0.7, pierce: true, ring: true, grow: 6 },
 };
 
 interface Enemy {
@@ -42,6 +50,8 @@ interface Enemy {
   spin: THREE.Vector3;
   changer: boolean;
   boss: boolean;
+  nextWeapon?: WeaponKind; // upgrade cube: which ammo it grants
+  bar: { grp: THREE.Group; fill: THREE.Mesh } | null; // 3D health bar (tough asteroids)
 }
 interface Bullet {
   mesh: THREE.Object3D;
@@ -51,6 +61,9 @@ interface Bullet {
   speed: number;
   aoe: number;
   pierce: boolean;
+  size: number; // current collision radius (grows for wave)
+  base: number; // geometry's base size, for visual scaling
+  grow: number; // radius growth per second (0 = none)
   hit: Set<Enemy>;
 }
 interface Spark {
@@ -79,6 +92,15 @@ export function HeroUniverse() {
   const [bossHp, setBossHp] = useState<number | null>(null);
   const [banner, setBanner] = useState<string | null>(null);
   const [paused, setPaused] = useState(false);
+  const [hoverAmmo, setHoverAmmo] = useState<string | null>(null);
+  const [muted, setMuted] = useState<boolean>(
+    () => typeof window !== "undefined" && localStorage.getItem("hero_muted") === "1",
+  );
+  const mutedRef = useRef(muted);
+  useEffect(() => {
+    mutedRef.current = muted;
+    if (typeof window !== "undefined") localStorage.setItem("hero_muted", muted ? "1" : "0");
+  }, [muted]);
 
   const apiRef = useRef<{ start: () => void; stop: () => void; resume: () => void }>({
     start: () => {},
@@ -101,6 +123,11 @@ export function HeroUniverse() {
     const mount = mountRef.current;
     if (!mount) return;
     const isTouch = window.matchMedia("(pointer: coarse)").matches;
+    // Weak-hardware tier: fewer particles, no MSAA, lower resolution so the
+    // hero doesn't peg an integrated GPU.
+    const nav = navigator as Navigator & { deviceMemory?: number };
+    const lowPower =
+      isTouch || (nav.hardwareConcurrency || 8) <= 4 || (nav.deviceMemory || 8) <= 4;
 
     const scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2(BG, 0.004);
@@ -109,8 +136,8 @@ export function HeroUniverse() {
     camera.position.set(0, 0, 6);
     camera.rotation.order = "YXZ";
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    const renderer = new THREE.WebGLRenderer({ antialias: !lowPower, alpha: true, powerPreference: "high-performance" });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, lowPower ? 1 : 1.75));
     renderer.setSize(mount.clientWidth, mount.clientHeight);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     mount.appendChild(renderer.domElement);
@@ -137,6 +164,47 @@ export function HeroUniverse() {
       return track(tex);
     };
     const starTex = dotTexture();
+
+    // ---------- 8-bit sound (Web Audio, synthesised — no asset files) ----------
+    let actx: AudioContext | null = null;
+    const ensureCtx = () => {
+      if (!actx) {
+        const AC = window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+        if (AC) actx = new AC();
+      }
+      if (actx && actx.state === "suspended") actx.resume();
+      return actx;
+    };
+    const blip = (freq: number, dur: number, type: OscillatorType, vol: number, toFreq?: number) => {
+      if (mutedRef.current) return;
+      const ac = ensureCtx();
+      if (!ac) return;
+      const t0 = ac.currentTime;
+      const osc = ac.createOscillator();
+      const gain = ac.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, t0);
+      if (toFreq) osc.frequency.exponentialRampToValueAtTime(Math.max(1, toFreq), t0 + dur);
+      gain.gain.setValueAtTime(0.0001, t0);
+      gain.gain.exponentialRampToValueAtTime(vol, t0 + 0.012);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      osc.connect(gain).connect(ac.destination);
+      osc.start(t0);
+      osc.stop(t0 + dur + 0.03);
+    };
+    const seq = (notes: Array<[number, number]>, type: OscillatorType, vol: number, step = 0.09) => {
+      if (mutedRef.current) return;
+      notes.forEach(([f, d], i) => window.setTimeout(() => blip(f, d, type, vol), i * step * 1000));
+    };
+    const sfx = {
+      shoot: () => blip(520, 0.05, "square", 0.045, 190),
+      break: () => blip(180, 0.14, "triangle", 0.09, 50),
+      hurt: () => blip(200, 0.22, "sawtooth", 0.1, 55),
+      upgrade: () => seq([[440, 0.06], [660, 0.06], [880, 0.1]], "square", 0.07, 0.07),
+      start: () => seq([[330, 0.08], [440, 0.08], [660, 0.12]], "square", 0.07, 0.09),
+      gameOver: () => seq([[440, 0.16], [330, 0.16], [220, 0.28]], "square", 0.08, 0.16),
+      bossWin: () => seq([[523, 0.1], [659, 0.1], [784, 0.1], [1047, 0.22]], "square", 0.08, 0.1),
+    };
 
     // ---------- hidden-line-removal wireframe body ----------
     // opaque bg-coloured fill (occludes rear edges) + bright edge lines on top.
@@ -186,14 +254,14 @@ export function HeroUniverse() {
       );
       return new THREE.Points(g, m);
     };
-    const starsFar = makeStars(2600, 360, 0.7, 0.7);
-    const starsNear = makeStars(700, 220, 1.3, 0.85);
+    const starsFar = makeStars(lowPower ? 1100 : 2600, 360, 0.7, 0.7);
+    const starsNear = makeStars(lowPower ? 320 : 700, 220, 1.3, 0.85);
     scene.add(starsFar, starsNear);
 
     // ---------- plexus slab (the "computer-generated galaxy") ----------
     const plexus = new THREE.Group();
     scene.add(plexus);
-    const NODES = 92;
+    const NODES = lowPower ? 52 : 92;
     const REGION = { x: 90, y: 48, z: 60 };
     const DIST = 15;
     const nodePos = new Float32Array(NODES * 3);
@@ -330,19 +398,142 @@ export function HeroUniverse() {
       orbiters.push({ pivot, speed: 0.5 - i * 0.07, body });
     }
 
+    // ---------- floating spaceship with a Vietnam flag ----------
+    // poly / wireframe hull; the flag itself is solid (red field, yellow star).
+    const SHIP_IDLE = new THREE.Vector3(-16, 1.5, -40);
+    const ship = new THREE.Group();
+    ship.position.copy(SHIP_IDLE);
+    scene.add(ship);
+
+    const hull = wireBody(new THREE.CapsuleGeometry(0.85, 2.4, 4, 10), WHITE, 1, 0.85);
+    hull.rotation.x = Math.PI / 2; // lie along Z
+    ship.add(hull);
+    const shipNose = wireBody(new THREE.ConeGeometry(0.85, 1.6, 10), EDGE, 1, 0.75);
+    shipNose.rotation.x = -Math.PI / 2;
+    shipNose.position.z = -2.0;
+    ship.add(shipNose);
+    const canopy = wireBody(new THREE.SphereGeometry(0.6, 10, 8), EDGE_BRIGHT, 1, 0.7);
+    canopy.position.set(0, 0.45, -0.6);
+    ship.add(canopy);
+    const wing = wireBody(new THREE.BoxGeometry(4.2, 0.14, 1.1), EDGE, 1, 0.6);
+    wing.position.y = -0.2;
+    ship.add(wing);
+    const engineGlow = new THREE.Mesh(
+      track(new THREE.SphereGeometry(0.5, 12, 12)),
+      track(new THREE.MeshBasicMaterial({ color: 0x8fd0ff, transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, depthWrite: false })),
+    );
+    engineGlow.position.set(0, -0.1, 2.1);
+    ship.add(engineGlow);
+
+    // reusable 5-point star shape (Vietnam flag)
+    const starShape = new THREE.Shape();
+    {
+      const spikes = 5, outerR = 0.42, innerR = 0.17;
+      for (let i = 0; i < spikes * 2; i++) {
+        const r = i % 2 === 0 ? outerR : innerR;
+        const a = (i / (spikes * 2)) * Math.PI * 2 - Math.PI / 2;
+        const px = Math.cos(a) * r, py = Math.sin(a) * r;
+        if (i === 0) starShape.moveTo(px, py);
+        else starShape.lineTo(px, py);
+      }
+      starShape.closePath();
+    }
+
+    const flag = new THREE.Group();
+    flag.position.set(0, 1.35, 0.2);
+    const pole = new THREE.Mesh(
+      track(new THREE.CylinderGeometry(0.05, 0.05, 1.7, 6)),
+      track(new THREE.MeshBasicMaterial({ color: 0xcfd8e0 })),
+    );
+    pole.position.y = -0.25;
+    flag.add(pole);
+    const flagField = new THREE.Mesh(
+      track(new THREE.PlaneGeometry(1.7, 1.15)),
+      track(new THREE.MeshBasicMaterial({ color: 0xda251d, side: THREE.DoubleSide })),
+    );
+    flagField.position.set(0.9, 0.45, 0);
+    flag.add(flagField);
+    const flagStar = new THREE.Mesh(
+      track(new THREE.ShapeGeometry(starShape)),
+      track(new THREE.MeshBasicMaterial({ color: 0xffcd00, side: THREE.DoubleSide })),
+    );
+    flagStar.position.set(0.9, 0.45, 0.01);
+    flag.add(flagStar);
+    ship.add(flag);
+
+    // ---------- cockpit interior (attached to the camera) ----------
+    // Only shown while playing, so it reads as sitting inside the ship.
+    scene.add(camera); // camera must be in the graph for its children to render
+    const cockpit = new THREE.Group();
+    cockpit.visible = false;
+    camera.add(cockpit);
+    const dash = wireBody(new THREE.BoxGeometry(3.6, 0.9, 0.5), EDGE, 0.6, 0.9);
+    dash.position.set(0, -1.28, -1.7);
+    dash.rotation.x = 0.5;
+    cockpit.add(dash);
+    for (const sx of [-1, 1]) {
+      const strut = wireBody(new THREE.BoxGeometry(0.12, 2.6, 0.12), EDGE_BRIGHT, 0.4, 0.65);
+      strut.position.set(sx * 1.7, -0.15, -1.6);
+      strut.rotation.z = sx * 0.5;
+      cockpit.add(strut);
+    }
+    // tiny VN flag decal on the dashboard
+    const decal = new THREE.Group();
+    const decalField = new THREE.Mesh(
+      track(new THREE.PlaneGeometry(0.34, 0.24)),
+      track(new THREE.MeshBasicMaterial({ color: 0xda251d, side: THREE.DoubleSide })),
+    );
+    decal.add(decalField);
+    const decalStar = new THREE.Mesh(
+      track(new THREE.ShapeGeometry(starShape)),
+      track(new THREE.MeshBasicMaterial({ color: 0xffcd00, side: THREE.DoubleSide })),
+    );
+    decalStar.scale.setScalar(0.26);
+    decalStar.position.z = 0.001;
+    decal.add(decalStar);
+    decal.position.set(1.15, -1.05, -1.66);
+    decal.rotation.x = 0.5;
+    cockpit.add(decal);
+
+    // ---------- satellites drifting across the far field ----------
+    const satellites: Array<{ grp: THREE.Group; vel: THREE.Vector3; life: number }> = [];
+    const makeSatellite = () => {
+      const g = new THREE.Group();
+      g.add(wireBody(new THREE.BoxGeometry(1.0, 0.6, 0.6), WHITE, 1, 0.7));
+      for (const sx of [-1, 1]) {
+        const panel = wireBody(new THREE.BoxGeometry(1.5, 0.03, 0.8), EDGE, 1, 0.55);
+        panel.position.x = sx * 1.35;
+        g.add(panel);
+      }
+      const antenna = wireBody(new THREE.ConeGeometry(0.32, 0.4, 8), EDGE_BRIGHT, 1, 0.6);
+      antenna.position.y = 0.5;
+      g.add(antenna);
+      return g;
+    };
+    let satTimer = 4;
+    const spawnSatellite = () => {
+      const g = makeSatellite();
+      const fromLeft = Math.random() < 0.5;
+      g.position.set(fromLeft ? -95 : 95, 8 + Math.random() * 30, -55 - Math.random() * 55);
+      g.rotation.set(Math.random(), Math.random(), Math.random());
+      scene.add(g);
+      const sp = 7 + Math.random() * 4;
+      satellites.push({ grp: g, vel: new THREE.Vector3(fromLeft ? sp : -sp, 0, 0), life: 0 });
+    };
+
     // ---------- game resources ----------
     const enemyEdgeGeoCache = new Map<string, THREE.BufferGeometry>();
-    const enemyBody = (radius: number, changer: boolean, boss: boolean) => {
+    const enemyBody = (radius: number, changer: boolean, boss: boolean, tint = WHITE) => {
       const geo = boss
         ? new THREE.TorusKnotGeometry(radius * 0.7, radius * 0.24, 64, 8)
         : changer
-          ? new THREE.OctahedronGeometry(radius, 0)
+          ? new THREE.BoxGeometry(radius * 1.35, radius * 1.35, radius * 1.35) // upgrade cube
           : new THREE.IcosahedronGeometry(radius, 0);
-      const edgeColor = boss ? EDGE_BRIGHT : changer ? EDGE : WHITE;
+      const edgeColor = boss ? EDGE_BRIGHT : changer ? EDGE : tint;
       const grp = wireBody(geo, edgeColor, 1, 1);
       // every asteroid gets a soft additive halo so it never sinks into the bg
-      const haloColor = boss ? EDGE_BRIGHT : changer ? EDGE : 0xbcd0dc;
-      const haloOpacity = boss ? 0.16 : changer ? 0.2 : 0.13;
+      const haloColor = boss ? EDGE_BRIGHT : changer ? EDGE : tint;
+      const haloOpacity = boss ? 0.16 : changer ? 0.22 : 0.14;
       const halo = new THREE.Mesh(
         track(new THREE.SphereGeometry(radius * 1.55, 16, 16)),
         track(new THREE.MeshBasicMaterial({ color: haloColor, transparent: true, opacity: haloOpacity, blending: THREE.AdditiveBlending, depthWrite: false })),
@@ -357,7 +548,13 @@ export function HeroUniverse() {
       const meta = WEAPON_META[kind];
       let geo = bulletGeoCache.get(kind);
       if (!geo) {
-        geo = meta.long ? new THREE.CylinderGeometry(meta.size * 0.5, meta.size * 0.5, 2.6, 8) : new THREE.SphereGeometry(meta.size, 10, 10);
+        geo = meta.long
+          ? new THREE.CylinderGeometry(meta.size * 0.5, meta.size * 0.5, 2.6, 8)
+          : meta.ring
+            ? new THREE.TorusGeometry(meta.size, meta.size * 0.22, 8, 24)
+            : meta.poly
+              ? new THREE.DodecahedronGeometry(meta.size, 0)
+              : new THREE.SphereGeometry(meta.size, 10, 10);
         bulletGeoCache.set(kind, track(geo));
       }
       let mat = bulletMatCache.get(kind);
@@ -366,6 +563,20 @@ export function HeroUniverse() {
         bulletMatCache.set(kind, track(mat));
       }
       return { geo, mat };
+    };
+
+    // shared health-bar resources (one geometry/material set for every bar)
+    const barGeo = track(new THREE.PlaneGeometry(1, 0.16));
+    const barBgMat = track(new THREE.MeshBasicMaterial({ color: 0x0a1220, transparent: true, opacity: 0.75, depthTest: false }));
+    const barFillMat = track(new THREE.MeshBasicMaterial({ color: 0x7ef0a0, depthTest: false }));
+    const makeHealthBar = () => {
+      const grp = new THREE.Group();
+      const bg = new THREE.Mesh(barGeo, barBgMat);
+      const fill = new THREE.Mesh(barGeo, barFillMat);
+      fill.position.z = 0.002;
+      grp.add(bg, fill);
+      grp.renderOrder = 999;
+      return { grp, fill };
     };
 
     const enemies: Enemy[] = [];
@@ -396,6 +607,9 @@ export function HeroUniverse() {
     const right = new THREE.Vector3();
     const up = new THREE.Vector3(0, 1, 0);
     const player = new THREE.Vector3(0, 0, 6);
+    const raycaster = new THREE.Raycaster();
+    const CENTER = new THREE.Vector2(0, 0); // crosshair = screen centre
+    let lastHover: string | null = null;
 
     let bannerTimeout = 0;
     const showBanner = (msg: string, hold = 1400) => {
@@ -425,6 +639,7 @@ export function HeroUniverse() {
 
     const removeEnemy = (e: Enemy) => {
       scene.remove(e.mesh);
+      if (e.bar) scene.remove(e.bar.grp);
       if (game.boss === e) {
         game.boss = null;
         setBossHp(null);
@@ -450,8 +665,35 @@ export function HeroUniverse() {
 
     // spawn an enemy coming in from a wide frontal cone, aimed at the player
     const spawnEnemy = (waveSpeed: number, hp: number, changer: boolean) => {
-      const radius = changer ? 1.1 : 0.75 + Math.random() * 1.1;
-      const mesh = enemyBody(radius, changer, false);
+      if (changer) {
+        // upgrade cube: drifts sideways across the view (never homes at you),
+        // carries a random ammo type shown on hover, granted only if shot.
+        const radius = 1.15;
+        const nextWeapon = WEAPONS[Math.floor(Math.random() * WEAPONS.length)];
+        const mesh = enemyBody(radius, true, false);
+        mesh.userData.changerWeapon = nextWeapon;
+        const fromLeft = Math.random() < 0.5;
+        mesh.position.set(fromLeft ? -52 : 52, (Math.random() - 0.5) * 22, -20 - Math.random() * 18);
+        mesh.rotation.set(Math.random() * 3, Math.random() * 3, Math.random() * 3);
+        scene.add(mesh);
+        const sp = 9 + Math.random() * 4;
+        enemies.push({
+          mesh, radius, hp: 2, maxHp: 2,
+          vel: new THREE.Vector3(fromLeft ? sp : -sp, 0, 0),
+          spin: new THREE.Vector3(Math.random() * 1.2, Math.random() * 1.4, Math.random()),
+          changer: true, boss: false, nextWeapon, bar: null,
+        });
+        return;
+      }
+      // normal / armored asteroid, homing at the player
+      const radius = 0.75 + Math.random() * 1.1;
+      // occasionally armored: blue = 2 hits, purple = 3 hits
+      let finalHp = hp;
+      const roll = Math.random();
+      if (roll < 0.16) finalHp = Math.max(finalHp, 3);
+      else if (roll < 0.42) finalHp = Math.max(finalHp, 2);
+      const tint = finalHp >= 3 ? PURPLE : finalHp === 2 ? BLUE : WHITE;
+      const mesh = enemyBody(radius, false, false, tint);
       const angH = (Math.random() - 0.5) * 1.05; // gentler horizontal spread (~±30°)
       const angV = (Math.random() - 0.5) * 0.75; // gentler vertical spread
       const R = 130 + Math.random() * 60;
@@ -461,15 +703,15 @@ export function HeroUniverse() {
       scene.add(mesh);
       const target = new THREE.Vector3(player.x + (Math.random() - 0.5) * 4, player.y + (Math.random() - 0.5) * 4, player.z);
       const vel = target.sub(mesh.position).normalize().multiplyScalar(waveSpeed + Math.random() * 2);
+      let bar: Enemy["bar"] = null;
+      if (finalHp >= 2) {
+        bar = makeHealthBar();
+        scene.add(bar.grp);
+      }
       enemies.push({
-        mesh,
-        radius,
-        hp: changer ? hp + 1 : hp,
-        maxHp: changer ? hp + 1 : hp,
-        vel,
+        mesh, radius, hp: finalHp, maxHp: finalHp, vel,
         spin: new THREE.Vector3(Math.random() * 1.4, Math.random() * 1.2, Math.random() * 1),
-        changer,
-        boss: false,
+        changer: false, boss: false, bar,
       });
     };
 
@@ -488,6 +730,7 @@ export function HeroUniverse() {
         spin: new THREE.Vector3(0, 0.4, 0),
         changer: false,
         boss: true,
+        bar: null,
       };
       enemies.push(boss);
       game.boss = boss;
@@ -517,10 +760,16 @@ export function HeroUniverse() {
       game.power = Math.max(0, game.power - 1);
       setPower(game.power);
     };
+    const setWeaponTo = (kind: WeaponKind) => {
+      game.weapon = WEAPONS.indexOf(kind);
+      setWeapon(kind);
+      showBanner(`↻ ${WEAPON_META[kind].label}`, 1300);
+    };
+    // pick a RANDOM weapon (different from the current one)
     const switchWeapon = () => {
-      game.weapon = (game.weapon + 1) % WEAPONS.length;
-      setWeapon(WEAPONS[game.weapon]);
-      showBanner(`↻ ${WEAPON_META[WEAPONS[game.weapon]].label}`, 1300);
+      let idx = game.weapon;
+      if (WEAPONS.length > 1) while (idx === game.weapon) idx = Math.floor(Math.random() * WEAPONS.length);
+      setWeaponTo(WEAPONS[idx]);
     };
 
     const destroyEnemy = (idx: number) => {
@@ -534,13 +783,16 @@ export function HeroUniverse() {
         addPower(4);
         switchWeapon();
         showBanner("HẠ GỤC BOSS! +300", 1600);
+        sfx.bossWin();
       } else if (e.changer) {
         game.score += 40;
         addPower(1);
-        switchWeapon();
+        setWeaponTo(e.nextWeapon || WEAPONS[game.weapon]); // grant the shown ammo
+        sfx.upgrade();
       } else {
         game.score += Math.round(12 * e.radius);
         addPower(1);
+        sfx.break();
       }
       setScore(game.score);
     };
@@ -561,6 +813,9 @@ export function HeroUniverse() {
       if (meta.long) {
         // orient cylinder along dir
         mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.clone().normalize());
+      } else if (meta.ring) {
+        // face the sound-wave ring toward travel direction (torus axis = +Z)
+        mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), dir.clone().normalize());
       }
       scene.add(mesh);
       bullets.push({
@@ -571,6 +826,9 @@ export function HeroUniverse() {
         speed: meta.speed,
         aoe: meta.aoe || 0,
         pierce: !!meta.pierce,
+        size: meta.size,
+        base: meta.size,
+        grow: meta.grow || 0,
         hit: new Set(),
       });
     };
@@ -581,6 +839,7 @@ export function HeroUniverse() {
       camera.getWorldDirection(fwd);
       right.crossVectors(fwd, up).normalize();
       const nose = camera.position.clone().add(tmp.copy(fwd).multiplyScalar(2.4)).add(new THREE.Vector3(0, -0.35, 0));
+      sfx.shoot();
       const salvo = salvoOf(game.power);
       for (let i = 0; i < salvo; i++) {
         const off = (i - (salvo - 1) / 2) * 0.55;
@@ -634,6 +893,7 @@ export function HeroUniverse() {
       setWave(1);
       setPaused(false);
       setBossHp(null);
+      sfx.start();
       if (!isTouch) canvas.requestPointerLock?.();
     };
 
@@ -645,12 +905,17 @@ export function HeroUniverse() {
       camera.position.set(0, 0, 6);
       game.paused = false;
       setPaused(false);
+      setHoverAmmo(null);
+      lastHover = null;
       if (document.pointerLockElement === canvas) document.exitPointerLock?.();
       setPhase("idle");
     };
 
     const gameOver = () => {
       game.mode = "over";
+      setHoverAmmo(null);
+      lastHover = null;
+      sfx.gameOver();
       if (document.pointerLockElement === canvas) document.exitPointerLock?.();
       setPhase("over");
     };
@@ -690,8 +955,14 @@ export function HeroUniverse() {
       game.firing = false;
     };
     const onKey = (e: KeyboardEvent) => {
-      if (e.code === "Escape" && (game.mode === "playing" || game.mode === "over")) {
-        stop();
+      if (e.code === "Escape") {
+        // during play, Esc releases pointer lock → the pause+settings overlay
+        // appears (with mute/exit); only fully exit from the game-over screen.
+        if (game.mode === "over") stop();
+        return;
+      }
+      if (e.code === "KeyM" && game.mode !== "idle") {
+        setMuted((m) => !m);
         return;
       }
       if (e.code === "Space" && game.mode === "playing" && !game.paused) {
@@ -729,11 +1000,86 @@ export function HeroUniverse() {
       game.lives = Math.max(0, game.lives - 1);
       setLives(game.lives);
       losePower(); // damage resets a power point
+      sfx.hurt();
       if (game.lives <= 0) gameOver();
     };
 
+
+    // Only burn GPU while the hero is actually on screen and the tab is
+    // visible. Scrolling past it (or switching tabs) idles the loop.
+    let running = true;
+    let onScreen = true;
+    const setRunning = (v: boolean) => {
+      if (v === running) return;
+      running = v;
+      if (v) {
+        clock.getDelta(); // discard the paused gap so dt doesn't spike
+        lastFrameTs = performance.now(); // don't count the pause as a slow frame
+        winStart = 0; // restart the FPS measurement window
+        raf = requestAnimationFrame(animate);
+      } else {
+        cancelAnimationFrame(raf);
+      }
+    };
+    const applyRunning = () => setRunning(onScreen && !document.hidden);
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        onScreen = entry.isIntersecting;
+        applyRunning();
+      },
+      { threshold: 0.01, rootMargin: "120px" },
+    );
+    io.observe(mount);
+    const onVisibility = () => applyRunning();
+    document.addEventListener("visibilitychange", onVisibility);
+
+    // ---------- adaptive FPS limiter ----------
+    // Probe what the machine can actually sustain, then lock to it. Fast GPUs
+    // stay at 60–120fps; a struggling iGPU settles to a stable lower cap
+    // instead of stuttering between 40 and 120. Downward-only: once it steps
+    // down it stays there (no oscillation), which is what "lock phù hợp" means.
+    const FPS_LADDER = [120, 90, 72, 60, 45, 36, 30];
+    let capIdx = lowPower ? 4 : 0; // weak: start at 45 · else discover from 120
+    let frameBudget = 1000 / FPS_LADDER[capIdx];
+    let lastFrameTs = performance.now();
+    let winStart = 0; // measurement window start (0 = warming up)
+    let winFrames = 0;
+    let winSlow = 0;
+    let badWindows = 0;
+
     const animate = () => {
+      if (!running) return;
       raf = requestAnimationFrame(animate);
+
+      const now = performance.now();
+      const gap = now - lastFrameTs;
+      // Frame pacing: skip this rAF tick if we're ahead of the budget. The 1ms
+      // slack keeps us from perpetually landing just under and halving the rate.
+      if (gap < frameBudget - 1) return;
+      lastFrameTs = now;
+
+      // Measure sustained rate over 1s windows; step the cap down if we keep
+      // missing it. Skip the first window as warm-up (compile/upload spikes).
+      if (winStart === 0) winStart = now;
+      winFrames++;
+      if (gap > frameBudget * 1.5) winSlow++;
+      if (now - winStart >= 1000) {
+        const missRatio = winSlow / Math.max(1, winFrames);
+        if (missRatio > 0.25 && capIdx < FPS_LADDER.length - 1) {
+          badWindows++;
+          if (badWindows >= 2) {
+            capIdx++;
+            frameBudget = 1000 / FPS_LADDER[capIdx];
+            badWindows = 0;
+          }
+        } else {
+          badWindows = 0;
+        }
+        winStart = now;
+        winFrames = 0;
+        winSlow = 0;
+      }
+
       const dt = Math.min(clock.getDelta(), 0.05);
       const et = clock.elapsedTime;
 
@@ -754,6 +1100,47 @@ export function HeroUniverse() {
         o.pivot.rotation.y += dt * o.speed;
         o.body.rotation.x += dt * 0.6;
         o.body.rotation.y += dt * 0.4;
+      }
+
+      // ---- spaceship + cockpit ----
+      flag.rotation.y = Math.sin(et * 1.6) * 0.35; // flag flutter
+      if (game.mode === "idle" || game.mode === "over") {
+        ship.visible = game.mode === "idle";
+        cockpit.visible = false;
+        ship.position.lerp(SHIP_IDLE, Math.min(1, dt * 2));
+        ship.position.y = SHIP_IDLE.y + Math.sin(et * 0.8) * 0.5;
+        ship.rotation.y = 0.4 + Math.sin(et * 0.3) * 0.25;
+        ship.rotation.z = Math.sin(et * 0.5) * 0.06;
+        ship.scale.setScalar(1);
+      } else if (game.mode === "intro") {
+        // fly the ship up to the camera as if you're boarding it
+        ship.visible = true;
+        cockpit.visible = false;
+        const k = Math.min(1, game.introT / INTRO_DUR);
+        ship.position.lerp(tmp.set(0, -0.7, 2.4), Math.min(1, dt * 3));
+        ship.rotation.y += dt * 1.4;
+        ship.scale.setScalar(1 + k * 1.6);
+      } else {
+        // playing: you're inside — hide the external ship, show the cockpit
+        ship.visible = false;
+        cockpit.visible = true;
+      }
+
+      // ---- satellites crossing the far field (ambient) ----
+      satTimer -= dt;
+      if (satTimer <= 0 && satellites.length < 2) {
+        spawnSatellite();
+        satTimer = 7 + Math.random() * 8;
+      }
+      for (let s = satellites.length - 1; s >= 0; s--) {
+        const sat = satellites[s];
+        sat.grp.position.add(tmp.copy(sat.vel).multiplyScalar(dt));
+        sat.grp.rotation.y += dt * 0.5;
+        sat.life += dt;
+        if (Math.abs(sat.grp.position.x) > 100 || sat.life > 40) {
+          scene.remove(sat.grp);
+          satellites.splice(s, 1);
+        }
       }
 
       if (game.mode === "idle") {
@@ -778,8 +1165,8 @@ export function HeroUniverse() {
       }
 
       if (game.mode === "playing" && !game.paused) {
-        // wave lifecycle
-        if (enemies.length === 0 && !game.betweenWaves) {
+        // wave lifecycle — upgrade cubes drift by and don't block the wave end
+        if (!enemies.some((e) => !e.changer) && !game.betweenWaves) {
           game.betweenWaves = true;
           game.waveTimer = 0;
           showBanner("HẾT ĐỢT ✓", 1400);
@@ -814,8 +1201,17 @@ export function HeroUniverse() {
             }
             e.mesh.rotation.y += dt * 0.5;
             e.mesh.rotation.z += dt * 0.2;
+          } else if (e.changer) {
+            // upgrade cube: cross the view, harmless, despawn off-screen
+            e.mesh.position.add(tmp.copy(e.vel).multiplyScalar(dt));
+            e.mesh.rotation.x += e.spin.x * dt;
+            e.mesh.rotation.y += e.spin.y * dt;
+            if (Math.abs(e.mesh.position.x) > 62) {
+              removeEnemy(e);
+              enemies.splice(i, 1);
+            }
           } else {
-            // homing steer
+            // homing steer → damages the player on contact
             tmp.copy(player).sub(e.mesh.position).normalize().multiplyScalar(e.vel.length());
             e.vel.lerp(tmp, Math.min(1, dt * 0.5));
             e.mesh.position.add(right.copy(e.vel).multiplyScalar(dt));
@@ -823,7 +1219,36 @@ export function HeroUniverse() {
             e.mesh.rotation.y += e.spin.y * dt;
             if (e.mesh.position.z > player.z - 1 || e.mesh.position.distanceTo(player) < e.radius + 1.6) {
               hitPlayer(e, i);
+              continue;
             }
+            if (e.bar) {
+              e.bar.grp.position.set(e.mesh.position.x, e.mesh.position.y + e.radius + 0.8, e.mesh.position.z);
+              e.bar.grp.quaternion.copy(camera.quaternion);
+              const r = Math.max(0, e.hp / e.maxHp);
+              e.bar.fill.scale.x = r;
+              e.bar.fill.position.x = -(1 - r) / 2;
+            }
+          }
+        }
+
+        // crosshair hover over an upgrade cube → surface its ammo type
+        {
+          let hovered: WeaponKind | null = null;
+          const changerMeshes: THREE.Object3D[] = [];
+          for (const e of enemies) if (e.changer) changerMeshes.push(e.mesh);
+          if (changerMeshes.length) {
+            raycaster.setFromCamera(CENTER, camera);
+            const hits = raycaster.intersectObjects(changerMeshes, true);
+            if (hits.length) {
+              let o: THREE.Object3D | null = hits[0].object;
+              while (o && !o.userData.changerWeapon) o = o.parent;
+              if (o) hovered = o.userData.changerWeapon as WeaponKind;
+            }
+          }
+          const label = hovered ? WEAPON_META[hovered].label : null;
+          if (label !== lastHover) {
+            lastHover = label;
+            setHoverAmmo(label);
           }
         }
 
@@ -832,11 +1257,19 @@ export function HeroUniverse() {
           const b = bullets[bi];
           b.mesh.position.add(tmp.copy(b.dir).multiplyScalar(b.speed * dt));
           b.life += dt;
+          if (b.grow > 0) {
+            b.size += b.grow * dt; // sound wave expands as it travels
+            b.mesh.scale.setScalar(b.size / b.base);
+            (b.mesh as THREE.Mesh).rotation.z += dt * 2;
+          } else {
+            b.mesh.rotation.x += dt * 3; // gentle tumble for poly/sphere bullets
+            b.mesh.rotation.y += dt * 2;
+          }
           let consumed = false;
           for (let ei = enemies.length - 1; ei >= 0; ei--) {
             const e = enemies[ei];
             if (b.hit.has(e)) continue;
-            if (b.mesh.position.distanceTo(e.mesh.position) < e.radius + WEAPON_META[WEAPONS[game.weapon]].size + 0.7) {
+            if (b.mesh.position.distanceTo(e.mesh.position) < e.radius + b.size + 0.7) {
               if (b.aoe > 0) {
                 // area damage
                 const center = b.mesh.position.clone();
@@ -894,6 +1327,8 @@ export function HeroUniverse() {
 
     return () => {
       cancelAnimationFrame(raf);
+      io.disconnect();
+      document.removeEventListener("visibilitychange", onVisibility);
       clearTimeout(bannerTimeout);
       window.removeEventListener("resize", onResize);
       window.removeEventListener("keydown", onKey);
@@ -1004,6 +1439,22 @@ export function HeroUniverse() {
             </div>
           )}
 
+          {/* upgrade-cube hover: show which ammo it grants */}
+          <AnimatePresence>
+            {phase === "playing" && hoverAmmo && (
+              <motion.div
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 4 }}
+                className="pointer-events-none absolute left-1/2 top-1/2 z-20 mt-10 -translate-x-1/2 whitespace-nowrap rounded-full border border-[#ff5a2a]/40 bg-black/60 px-3 py-1.5 backdrop-blur-md"
+              >
+                <span className="flex items-center gap-1.5 font-mono text-xs font-bold text-[#ff9a5c]">
+                  <ArrowBigUpDash className="h-4 w-4" /> NÂNG CẤP · {hoverAmmo}
+                </span>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* stats */}
           <div className="absolute left-4 top-4 z-30 flex items-center gap-4 rounded-full border border-[#ff5a2a]/20 bg-black/50 px-4 py-2 text-white backdrop-blur-md">
             <span className="font-mono text-sm"><span className="text-white/50">WAVE</span> <span className="font-bold text-[#ff9a5c]">{wave}</span></span>
@@ -1015,9 +1466,20 @@ export function HeroUniverse() {
             </span>
           </div>
 
-          <button type="button" onClick={handleStop} className="absolute right-4 top-4 z-30 flex items-center gap-1.5 rounded-full border border-[#ff5a2a]/20 bg-black/50 px-3 py-2 text-xs font-medium text-white/80 backdrop-blur-md transition-colors hover:bg-white/10">
-            <X className="h-4 w-4" /> Exit
-          </button>
+          <div className="absolute right-4 top-4 z-30 flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setMuted((m) => !m)}
+              aria-label={muted ? "Bật tiếng" : "Tắt tiếng"}
+              title={muted ? "Bật tiếng (M)" : "Tắt tiếng (M)"}
+              className="flex items-center rounded-full border border-[#ff5a2a]/20 bg-black/50 p-2 text-white/80 backdrop-blur-md transition-colors hover:bg-white/10"
+            >
+              {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+            </button>
+            <button type="button" onClick={handleStop} className="flex items-center gap-1.5 rounded-full border border-[#ff5a2a]/20 bg-black/50 px-3 py-2 text-xs font-medium text-white/80 backdrop-blur-md transition-colors hover:bg-white/10">
+              <X className="h-4 w-4" /> Exit
+            </button>
+          </div>
 
           {/* boss HP */}
           <AnimatePresence>
@@ -1048,7 +1510,7 @@ export function HeroUniverse() {
                 <span className="font-mono text-[11px] text-white/40">×{salvoOf(power)}</span>
               </div>
               <span className="rounded-full bg-black/30 px-3 py-1 text-[11px] text-white/55 backdrop-blur-md">
-                Di chuột để ngắm · Giữ Space để bắn · Bắn thiên thạch cyan để đổi loại đạn
+                Di chuột để ngắm · Giữ Space để bắn · Thiên thạch cam vô hại — bắn hoặc bay vào để đổi đạn
               </span>
             </div>
           )}
@@ -1092,8 +1554,12 @@ export function HeroUniverse() {
                   <button type="button" onClick={handleResume} className="rounded-full bg-[#ff9a5c] px-5 py-2.5 text-sm font-semibold text-black transition-transform hover:scale-105 active:scale-95">
                     Nhấp để tiếp tục
                   </button>
+                  <button type="button" onClick={() => setMuted((m) => !m)} className="flex items-center gap-1.5 rounded-full border border-white/25 px-5 py-2.5 text-sm font-semibold text-white/85 transition-colors hover:bg-white/10">
+                    {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+                    {muted ? "Bật tiếng" : "Tắt tiếng"}
+                  </button>
                   <button type="button" onClick={handleStop} className="flex items-center gap-1.5 rounded-full border border-white/25 px-5 py-2.5 text-sm font-semibold text-white/85 transition-colors hover:bg-white/10">
-                    <X className="h-4 w-4" /> Thoát (Esc)
+                    <X className="h-4 w-4" /> Thoát
                   </button>
                 </div>
               </motion.div>

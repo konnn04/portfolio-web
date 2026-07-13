@@ -94,9 +94,35 @@ export interface Certificate {
 }
 
 /* ─── More (about me extras) ─── */
+export interface GameItem {
+  name: string; // used to search RAWG for the cover image
+  uid?: string; // in-game unique id (UID / friend code / player id), if any
+  username?: string; // in-game handle, if any
+  level?: string; // rank / level, if any
+}
+
+export interface HobbyItem {
+  name: Localized;
+  startYear?: number; // year picked it up
+  endYear?: number; // year stopped (omit while ongoing)
+}
+
 export interface MusicItem {
+  url: string; // Spotify link — metadata resolved live via oEmbed
+  title?: string; // fallback label if oEmbed fails
+}
+
+export interface MovieItem {
   title: string;
-  url: string;
+  year?: number;
+  note?: Localized; // optional one-liner
+}
+
+export interface BookItem {
+  title: string;
+  author?: string;
+  year?: number;
+  note?: Localized; // optional one-liner
 }
 
 export interface SecretProject {
@@ -106,14 +132,16 @@ export interface SecretProject {
 }
 
 export interface More {
-  games: string[];
-  hobbies: Record<string, string[]>;
+  games: GameItem[];
+  hobbies: HobbyItem[];
+  movies: MovieItem[];
+  books: BookItem[];
   music: MusicItem[];
   secretProjects: SecretProject[];
 }
 
-/* ─── Profile ─── */
-export interface Profile {
+/* ─── Identity (scalar bio fields) ─── */
+export interface Identity {
   firstName: string;
   middleName: string;
   lastName: string;
@@ -125,6 +153,10 @@ export interface Profile {
   discordDataUrl: string;
   bio: Localized;
   slogan: Localized;
+}
+
+/* ─── Profile (identity + all sections) ─── */
+export interface Profile extends Identity {
   socials: Socials;
   schools: School[];
   publish: string[];

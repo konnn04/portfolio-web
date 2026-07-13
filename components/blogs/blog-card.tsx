@@ -9,7 +9,6 @@ import { Post } from "@/lib/posts";
 import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/components/providers/providers";
 
-/** ~200 words/min reading-speed estimate from the raw content. */
 function readingMinutes(content?: string) {
   const words = (content || "").trim().split(/\s+/).filter(Boolean).length;
   return Math.max(1, Math.ceil(words / 200));
@@ -76,7 +75,6 @@ export function BlogCard({ post, viewMode }: BlogCardProps) {
     );
   }
 
-  // Card View
   return (
     <Link href={`/blogs/${slug}`} className="group block h-full">
       <article className="h-full flex flex-col rounded-2xl border bg-card text-card-foreground shadow-sm overflow-hidden transition-all hover:shadow-md hover:border-primary/50">
