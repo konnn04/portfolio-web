@@ -5,13 +5,14 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useLanguage } from "@/components/providers/providers";
 import { useScrollSpy } from "@/hooks/use-scroll-spy";
-import { Home, Mail, BookOpen } from "lucide-react";
+import { Home, Mail, BookOpen, FolderGit2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const LINKS = [
   { key: "sections.home", icon: Home, href: "/#home", section: "home" as const },
-  { key: "sections.contact", icon: Mail, href: "/#contact", section: "contact" as const },
+  { key: "sections.projects", icon: FolderGit2, href: "/projects", section: null },
   { key: "nav.blogs", icon: BookOpen, href: "/blogs", section: null },
+  { key: "sections.contact", icon: Mail, href: "/#contact", section: "contact" as const },
 ];
 
 export function MobileDock() {
@@ -46,7 +47,7 @@ export function MobileDock() {
                   ? isHome && activeSection !== "contact"
                   : link.section === "contact"
                     ? isHome && activeSection === "contact"
-                    : pathname === "/blogs";
+                    : pathname === link.href;
               return (
                 <Link
                   key={link.href}

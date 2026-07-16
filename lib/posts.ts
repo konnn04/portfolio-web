@@ -3,7 +3,7 @@
 import fs from "fs";
 import path from "path";
 
-const postsDirectory = path.join(process.cwd(), "posts");
+const postsDirectory = path.join(process.cwd(), "data", "posts");
 
 import { Post, PostMetadata } from "@/types/blog";
 export type { Post, PostMetadata };
@@ -29,7 +29,10 @@ export function parsePost(fileContents: string, folderName?: string): Post | nul
         
         if (valueRaw.endsWith(',')) valueRaw = valueRaw.slice(0, -1).trim();
 
-        if (valueRaw.startsWith('"') && valueRaw.endsWith('"')) {
+        if (key === 'pinned') {
+            (metadata as Record<string, any>)['pinned'] = valueRaw.replace(/"/g, '') === 'true';
+        }
+        else if (valueRaw.startsWith('"') && valueRaw.endsWith('"')) {
             valueRaw = valueRaw.slice(1, -1);
             if (['title', 'slug', 'date', 'author', 'description', 'image'].includes(key as string)) {
                (metadata as Record<string, any>)[key as string] = valueRaw;

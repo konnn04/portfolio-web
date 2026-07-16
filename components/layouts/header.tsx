@@ -31,11 +31,13 @@ export function Header() {
   const activeSection = useScrollSpy(["contact"], isHome);
   const contactActive = isHome && activeSection === "contact";
   const blogActive = pathname === "/blogs";
+  const projectsActive = pathname === "/projects";
 
   const navLinks = [
     { href: "/#home", label: t("sections.home"), active: isHome && !contactActive },
-    { href: "/#contact", label: t("sections.contact"), active: contactActive },
+    { href: "/projects", label: t("sections.projects"), active: projectsActive },
     { href: "/blogs", label: t("nav.blogs"), active: blogActive },
+    { href: "/#contact", label: t("sections.contact"), active: contactActive },
   ];
 
   useEffect(() => {

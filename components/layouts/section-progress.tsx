@@ -7,7 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useLanguage } from "@/components/providers/providers";
 import { useScrollSpy } from "@/hooks/use-scroll-spy";
 
-const IDS = ["home", "about", "experience", "certificates", "skills", "code", "projects", "contact"];
+const IDS = ["home", "about", "experience", "certificates", "skills", "code", "projects", "blog", "contact"];
 
 /**
  * Sticky left-edge progress rail: one dot per section, highlights the current

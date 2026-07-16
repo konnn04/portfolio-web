@@ -23,11 +23,19 @@ export function ScrambleText({ text, className, wordDelay = 0.14, scrambleDur = 
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, margin: "-40px" });
   const [display, setDisplay] = useState(text);
-  const started = useRef(false);
+  const animatedFor = useRef<string | null>(null);
+
+  // Baseline: whenever the text changes (e.g. a language switch), show the new
+  // text right away and allow the scramble to replay for it. Without this the
+  // title stays stuck on the previous language.
+  useEffect(() => {
+    setDisplay(text);
+    animatedFor.current = null;
+  }, [text]);
 
   useEffect(() => {
-    if (!inView || started.current) return;
-    started.current = true;
+    if (!inView || animatedFor.current === text) return;
+    animatedFor.current = text;
 
     if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setDisplay(text);

@@ -9,6 +9,7 @@ import { HomeCertificates } from "@/components/sections/home-certificates";
 import { HomeSkills } from "@/components/sections/home-skills";
 import { HomeCodeStats } from "@/components/sections/home-code";
 import { HomeProjects } from "@/components/sections/home-projects";
+import { HomeBlog } from "@/components/sections/home-blog";
 import { ContactSection } from "@/components/sections/contact-section";
 
 // three.js hero must be client-only
@@ -77,6 +78,27 @@ export default function Home() {
     return () => window.removeEventListener("wheel", onWheel);
   }, []);
 
+  // Cross-page hash scroll (e.g. clicking "Contact" from /blogs → /#contact).
+  // Sections mount progressively and the hero is loaded dynamically, so the
+  // native hash jump fires before the target exists. Retry until it's there.
+  useEffect(() => {
+    const scrollToHash = () => {
+      const hash = window.location.hash;
+      if (!hash) return;
+      const id = decodeURIComponent(hash.slice(1));
+      let tries = 0;
+      const attempt = () => {
+        const el = document.getElementById(id);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+        else if (tries++ < 50) window.setTimeout(attempt, 100);
+      };
+      window.setTimeout(attempt, 80);
+    };
+    scrollToHash();
+    window.addEventListener("hashchange", scrollToHash);
+    return () => window.removeEventListener("hashchange", scrollToHash);
+  }, []);
+
   return (
     <div className="-mt-16 flex w-full flex-col">
       <HeroUniverse />
@@ -86,6 +108,7 @@ export default function Home() {
       <HomeSkills />
       <HomeCodeStats />
       <HomeProjects />
+      <HomeBlog />
       <ContactSection />
     </div>
   );

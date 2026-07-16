@@ -83,7 +83,7 @@ export function ContactSection() {
             </motion.div>
           </ScrollReveal>
           <SectionHeading
-            index="07"
+            index="08"
             kicker={t("sections.contact")}
             title={t("contact.title")}
             subtitle={t("contact.subtitle")}

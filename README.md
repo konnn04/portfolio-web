@@ -89,15 +89,17 @@ portfolio-web/
 │   └── robots.ts         # SEO configuration
 ├── components/           # React components
 │   ├── blogs/            # Blog implementation details
-│   ├── projects/         # Project cards and modals
+│   ├── projects/         # Project cards, gallery, markdown
 │   ├── sections/         # Page sections (Hero, Retro Grid)
 │   ├── ui/               # Base Shadcn/Radix components
 │   └── providers/        # i18n and Global contexts
 ├── configs/              # Data & Messages
 │   ├── messages/         # i18n JSON (en, vi)
 │   └── data/
-│       ├── my-projects.ts # Portfolio data (typed)
 │       └── my-info.ts     # Site identity + profile (typed, white-label here)
+├── data/                 # Markdown content (one folder per slug)
+│   ├── posts/            # Blog posts  (content_{en,vi}.md + assets/)
+│   └── projects/         # Projects    (content_{en,vi}.md + assets/)
 ├── lib/                  # Core logic & Utility functions
 ├── types/                # TypeScript definitions
 └── public/               # Static assets & images
@@ -118,7 +120,8 @@ pnpm run precommit    # Manual post-validation script
 Most of the content is data-driven. You can customize the site by editing:
 
 - `configs/data/my-info.ts`: `site` (name, url, GitHub/Discord handles, feature flags) and `profile` (bio, socials, education, experience, skills, certificates).
-- `configs/data/my-projects.ts`: Projects list and image paths.
+- `data/posts/<slug>/content_{en,vi}.md`: Blog posts. Header block (`<!-- Header -->`…`<!-- Content -->`) + body; images in `<slug>/assets/`. Add `- pinned: true` to feature a post on the home page only.
+- `data/projects/<slug>/content_{en,vi}.md`: Projects — authored exactly like posts (header block + body, images/videos in `<slug>/assets/`). One folder per project = one `/projects/<slug>` page. Header keys: `title, joinAt, github, website, images, langs, contributors, tags, description` (+ optional `pinned`). No `my-projects.ts` — the folder is the single source.
 - `configs/messages/`: Translation strings for all UI elements.
 - `app/globals.css`: The single `--brand` accent token (light + dark).
 

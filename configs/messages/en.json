@@ -27,6 +27,7 @@
     "skills": "Skills",
     "code": "Code",
     "projects": "Projects",
+    "blog": "Blog",
     "contact": "Contact"
   },
   "code": {
@@ -50,6 +51,8 @@
   },
   "blogs": {
     "title": "Blog Insights",
+    "featured_title": "Featured writing",
+    "view_all": "See all my blogs",
     "description": "Thoughts, learnings, and tutorials on web development, software engineering, and more.",
     "search_placeholder": "Search articles...",
     "search_button": "Search",

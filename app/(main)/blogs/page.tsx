@@ -93,28 +93,49 @@ export default function BlogsClientPage() {
             ))}
           </div>
         ) : (
-          <div className="space-y-10">
-            {Object.entries(
-              posts.reduce((acc, post) => {
-                const year = post.metadata.date ? new Date(post.metadata.date).getFullYear() : "Past";
-                if (!acc[year]) acc[year] = [];
-                acc[year].push(post);
-                return acc;
-              }, {} as Record<string, Post[]>)
-            ).sort(([a], [b]) => Number(b) - Number(a)).map(([year, yearPosts]) => (
-              <div key={year} className="space-y-6">
-                <div className="rounded-full bg-background/70 px-5 py-3 text-xl font-semibold text-primary shadow-sm shadow-primary/10">
-                  {year}
-                </div>
-                <div className="space-y-4">
-                  {yearPosts.map((post, idx) => (
-                    <ScrollReveal key={post.metadata.slug} delay={idx * 0.06} direction="up">
-                      <BlogCard post={post} viewMode={viewMode} />
-                    </ScrollReveal>
-                  ))}
-                </div>
-              </div>
-            ))}
+          <div className="relative">
+            {/* timeline spine */}
+            <span
+              aria-hidden
+              className="absolute left-[15px] top-3 bottom-3 w-px bg-gradient-to-b from-transparent via-border to-transparent"
+            />
+            <div className="space-y-12">
+              {Object.entries(
+                posts.reduce((acc, post) => {
+                  const year = post.metadata.date ? new Date(post.metadata.date).getFullYear() : "Past";
+                  if (!acc[year]) acc[year] = [];
+                  acc[year].push(post);
+                  return acc;
+                }, {} as Record<string, Post[]>)
+              )
+                .sort(([a], [b]) => Number(b) - Number(a))
+                .map(([year, yearPosts]) => (
+                  <div key={year}>
+                    {/* year marker on the spine */}
+                    <div className="mb-6 flex items-center gap-4">
+                      <span className="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-primary/40 bg-background font-mono text-[11px] font-bold text-primary shadow-sm">
+                        {String(year).slice(2)}
+                      </span>
+                      <span className="font-mono text-sm font-semibold uppercase tracking-[0.25em] text-muted-foreground">
+                        {year}
+                      </span>
+                    </div>
+                    <div className="space-y-4 pl-11">
+                      {yearPosts.map((post, idx) => (
+                        <ScrollReveal key={post.metadata.slug} delay={idx * 0.06} direction="up">
+                          <div className="relative">
+                            <span
+                              aria-hidden
+                              className="absolute -left-[26px] top-8 h-2.5 w-2.5 rounded-full bg-primary/70 ring-4 ring-background"
+                            />
+                            <BlogCard post={post} viewMode={viewMode} />
+                          </div>
+                        </ScrollReveal>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+            </div>
           </div>
         )
       ) : (

@@ -15,7 +15,7 @@ export interface Post {
   content: string;
 }
 
-const postsDirectory = path.join(process.cwd(), "posts");
+const postsDirectory = path.join(process.cwd(), "data", "posts");
 
 function parsePostData(fileContents: string, folderName: string): Post | null {
   const headerMatch = fileContents.match(/<-help  Header -->([\s\S]*?)<-help  Content -->([\s\S]*)/);

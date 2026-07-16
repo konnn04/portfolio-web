@@ -7,6 +7,8 @@ export interface PostMetadata {
   description: string;
   image: string;
   categories: string[];
+  /** Featured on the home page only. Ignored by the /blogs listing. */
+  pinned?: boolean;
 }
 
 export interface Post {

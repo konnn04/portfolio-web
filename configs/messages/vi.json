@@ -27,6 +27,7 @@
     "skills": "Kỹ năng",
     "code": "Mã nguồn",
     "projects": "Dự án",
+    "blog": "Blog",
     "contact": "Liên hệ"
   },
   "code": {
@@ -50,6 +51,8 @@
   },
   "blogs": {
     "title": "Góc chia sẻ",
+    "featured_title": "Bài viết nổi bật",
+    "view_all": "Xem tất cả bài viết",
     "description": "Những suy nghĩ, bài học và hướng dẫn về phát triển web, kỹ thuật phần mềm và nhiều điều khác.",
     "search_placeholder": "Tìm kiếm bài viết...",
     "search_button": "Tìm kiếm",

@@ -10,6 +10,7 @@ export async function GET(request: NextRequest) {
   const sortOrder = searchParams.get("sortOrder") || "desc"; // 'asc' | 'desc'
   const category = searchParams.get("category") || "";
   const tag = searchParams.get("tag") || "";
+  const pinnedFirst = searchParams.get("pinned") === "1"; // home featured ordering
 
   let lang = request.cookies.get("language")?.value as "en" | "vi" | undefined;
   if (!lang) {
@@ -52,6 +53,11 @@ export async function GET(request: NextRequest) {
     }
     return sortOrder === "asc" ? comparison : -comparison;
   });
+
+  // Home "featured" ordering: pinned posts first, then the date sort above.
+  if (pinnedFirst) {
+    posts = [...posts].sort((a, b) => (b.metadata.pinned ? 1 : 0) - (a.metadata.pinned ? 1 : 0));
+  }
 
   const total = posts.length;
   const totalPages = Math.ceil(total / limit);

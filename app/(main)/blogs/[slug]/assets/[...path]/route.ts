@@ -21,7 +21,7 @@ export async function GET(
   }
 
   const fileName = imagePathArray[imagePathArray.length - 1];
-  const potentialImagePath = path.join(process.cwd(), "posts", post.folderName, "assets", ...imagePathArray);
+  const potentialImagePath = path.join(process.cwd(), "data", "posts", post.folderName, "assets", ...imagePathArray);
 
   try {
     if (fs.existsSync(potentialImagePath)) {
