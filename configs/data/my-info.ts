@@ -28,6 +28,7 @@ export const site: Site = {
     easterEgg: true,
     discord: true,
     github: true,
+    titleScrambleEffect: false,
   },
 };
 

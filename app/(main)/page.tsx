@@ -80,17 +80,27 @@ export default function Home() {
 
   // Cross-page hash scroll (e.g. clicking "Contact" from /blogs → /#contact).
   // Sections mount progressively and the hero is loaded dynamically, so the
-  // native hash jump fires before the target exists. Retry until it's there.
+  // native hash jump fires before the target exists. Retry until it's there,
+  // then keep re-correcting for a bit: HomeProjects/HomeBlog fetch their data
+  // after mount and grow the page, pushing #contact down after we already
+  // scrolled to it.
   useEffect(() => {
     const scrollToHash = () => {
       const hash = window.location.hash;
       if (!hash) return;
       const id = decodeURIComponent(hash.slice(1));
       let tries = 0;
+      let settled = 0;
       const attempt = () => {
         const el = document.getElementById(id);
-        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-        else if (tries++ < 50) window.setTimeout(attempt, 100);
+        if (!el) {
+          if (tries++ < 50) window.setTimeout(attempt, 100);
+          return;
+        }
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        if (Math.abs(el.getBoundingClientRect().top) < 2) settled++;
+        else settled = 0;
+        if (settled < 3 && tries++ < 30) window.setTimeout(attempt, 150);
       };
       window.setTimeout(attempt, 80);
     };

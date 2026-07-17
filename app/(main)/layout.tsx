@@ -14,6 +14,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { HeaderProvider } from "@/components/providers/header-provider";
 import { siteConfig } from "@/lib/site-config";
 import { ScrollToTop } from "@/components/ui/scroll-to-top";
+import { ScrollRestoration } from "@/components/ui/scroll-restoration";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -105,12 +107,14 @@ export default async function RootLayout({
             <TooltipProvider>
               <FirstLoader />
               <SiteBackground />
+              <ScrollRestoration />
               <Header />
               <SectionProgress />
               <main className="flex-1 mt-16 mb-20 md:mb-0">{children}</main>
               <Footer />
               <MobileDock />
               <ScrollToTop />
+              <Toaster />
             </TooltipProvider>
           </HeaderProvider>
         </Providers>

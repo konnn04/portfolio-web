@@ -4,6 +4,7 @@ export interface SiteFeatures {
   easterEgg: boolean;
   discord: boolean;
   github: boolean;
+  titleScrambleEffect: boolean;
 }
 
 export interface Site {

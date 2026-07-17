@@ -2,6 +2,7 @@
 
 import { ScrollReveal } from "@/components/ui/scroll-reveal";
 import { ScrambleText } from "@/components/ui/scramble-text";
+import { siteConfig } from "@/lib/site-config";
 
 interface SectionHeadingProps {
   index?: string;
@@ -30,7 +31,7 @@ export function SectionHeading({ index, kicker, title, subtitle, align = "center
           <span className="h-px w-8 bg-gradient-to-l from-transparent to-brand/70" />
         </div>
         <h2 className="text-3xl font-bold tracking-tight text-balance sm:text-4xl md:text-[2.75rem] md:leading-[1.1]">
-          <ScrambleText text={title} />
+          {siteConfig.features.titleScrambleEffect ? <ScrambleText text={title} /> : title}
         </h2>
         {subtitle && (
           <p className={`mt-4 max-w-2xl text-muted-foreground ${centered ? "" : "text-left"}`}>{subtitle}</p>

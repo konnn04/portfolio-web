@@ -9,7 +9,7 @@ import { useLanguage } from "@/components/providers/providers";
 import type { Project } from "@/types/project";
 
 export default function ProjectsPage() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const { setConfig } = useHeader();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -21,12 +21,13 @@ export default function ProjectsPage() {
   }, [setConfig]);
 
   useEffect(() => {
+    setLoading(true);
     fetch("/api/projects")
       .then((r) => r.json())
       .then((j) => setProjects(j.data || []))
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, []);
+  }, [lang]);
 
   const allTags = useMemo(() => {
     const set = new Set<string>();

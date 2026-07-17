@@ -10,7 +10,7 @@ import { useLanguage } from "@/components/providers/providers";
 import type { Post } from "@/lib/posts";
 
 export function HomeBlog() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [posts, setPosts] = useState<Post[]>([]);
   const [loaded, setLoaded] = useState(false);
 
@@ -20,7 +20,7 @@ export function HomeBlog() {
       .then((j) => setPosts(j.data || []))
       .catch(() => {})
       .finally(() => setLoaded(true));
-  }, []);
+  }, [lang]);
 
   // nothing to show → render nothing (keeps the section out of the flow)
   if (loaded && posts.length === 0) return null;

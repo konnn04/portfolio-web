@@ -16,7 +16,7 @@ export default function BlogsClientPage() {
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<"list" | "card">("card");
   const { setConfig } = useHeader();
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
 
   useEffect(() => {
     const saved = localStorage.getItem("blogViewMode");
@@ -60,7 +60,7 @@ export default function BlogsClientPage() {
     };
 
     fetchPosts();
-  }, [searchParams]);
+  }, [searchParams, lang]);
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

@@ -10,7 +10,7 @@ import { useLanguage } from "@/components/providers/providers";
 import type { Project } from "@/types/project";
 
 export function HomeProjects() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const [projects, setProjects] = useState<Project[]>([]);
   const [total, setTotal] = useState(0);
 
@@ -22,7 +22,7 @@ export function HomeProjects() {
         setTotal(j.meta?.total || 0);
       })
       .catch(() => {});
-  }, []);
+  }, [lang]);
 
   return (
     <section id="projects" className="relative w-full scroll-mt-20 py-24 md:py-32">

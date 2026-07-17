@@ -10,6 +10,7 @@ interface SiteFeatures {
   easterEgg: boolean;
   discord: boolean;
   github: boolean;
+  titleScrambleEffect: boolean;
 }
 interface SiteSettings {
   name: string;
@@ -41,5 +42,6 @@ export const siteConfig: SiteSettings = {
     easterEgg: raw.features?.easterEgg ?? true,
     discord: raw.features?.discord ?? true,
     github: raw.features?.github ?? true,
+    titleScrambleEffect: raw.features?.titleScrambleEffect ?? false,
   },
 };
