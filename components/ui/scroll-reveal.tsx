@@ -43,13 +43,6 @@ export function ScrollReveal({
               x: 0,
               y: 0,
               scale: 1,
-              // a brief brand glow that follows the real (rounded) silhouette,
-              // not the wrapper box — drop-shadow respects the content alpha.
-              filter: [
-                "drop-shadow(0 0 0px rgba(255,90,42,0))",
-                "drop-shadow(0 0 14px rgba(255,90,42,0.5))",
-                "drop-shadow(0 0 0px rgba(255,90,42,0))",
-              ],
             }
           : { opacity: 0, scale: 0.985, ...initial }
       }
@@ -57,8 +50,8 @@ export function ScrollReveal({
         duration,
         delay,
         ease: "easeOut",
-        filter: { duration: 0.9, delay, times: [0, 0.5, 1], ease: "easeOut" },
       }}
+      style={{ willChange: isInView ? "auto" : "transform, opacity" }}
       className={className}
     >
       {children}

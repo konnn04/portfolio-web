@@ -1047,22 +1047,32 @@ export function HeroUniverse() {
     let winSlow = 0;
     let badWindows = 0;
 
+    // While the page is being scrolled the main thread is busy compositing and
+    // revealing sections, so the hero drops to ~30fps until scrolling settles.
+    let scrollingUntil = 0;
+    const onScrollActivity = () => {
+      scrollingUntil = performance.now() + 180;
+    };
+    window.addEventListener("scroll", onScrollActivity, { passive: true });
+
     const animate = () => {
       if (!running) return;
       raf = requestAnimationFrame(animate);
 
       const now = performance.now();
       const gap = now - lastFrameTs;
+      const scrolling = now < scrollingUntil;
       // Frame pacing: skip this rAF tick if we're ahead of the budget. The 1ms
       // slack keeps us from perpetually landing just under and halving the rate.
-      if (gap < frameBudget - 1) return;
+      const budget = scrolling ? Math.max(frameBudget, 1000 / 30) : frameBudget;
+      if (gap < budget - 1) return;
       lastFrameTs = now;
 
       // Measure sustained rate over 1s windows; step the cap down if we keep
       // missing it. Skip the first window as warm-up (compile/upload spikes).
       if (winStart === 0) winStart = now;
       winFrames++;
-      if (gap > frameBudget * 1.5) winSlow++;
+      if (!scrolling && gap > frameBudget * 1.5) winSlow++;
       if (now - winStart >= 1000) {
         const missRatio = winSlow / Math.max(1, winFrames);
         if (missRatio > 0.25 && capIdx < FPS_LADDER.length - 1) {
@@ -1331,6 +1341,7 @@ export function HeroUniverse() {
       document.removeEventListener("visibilitychange", onVisibility);
       clearTimeout(bannerTimeout);
       window.removeEventListener("resize", onResize);
+      window.removeEventListener("scroll", onScrollActivity);
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("keyup", onKeyUp);
       window.removeEventListener("pointerup", onPointerUp);
@@ -1408,7 +1419,7 @@ export function HeroUniverse() {
           whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.94 }}
           aria-label="Play space shooter"
-          className="group absolute bottom-6 left-6 z-30 flex items-center gap-2 rounded-full border border-[#ff5a2a]/40 bg-[#ff5a2a]/10 px-4 py-2.5 text-[#ff9a5c] shadow-[0_0_25px_rgba(57,201,232,0.2)] backdrop-blur-md transition-colors hover:bg-[#ff5a2a]/20"
+          className="group absolute bottom-6 left-6 z-30 flex items-center gap-2 rounded-full border border-[#ff5a2a]/40 bg-[#ff5a2a]/10 px-4 py-2.5 text-[#ff9a5c] shadow-[0_0_25px_rgba(57,201,232,0.2)] transition-colors hover:bg-[#ff5a2a]/20"
         >
           <Play className="h-4 w-4 fill-[#ff9a5c] text-[#ff9a5c]" />
           <span className="text-xs font-semibold tracking-wide">Play</span>
@@ -1446,7 +1457,7 @@ export function HeroUniverse() {
                 initial={{ opacity: 0, y: 4 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 4 }}
-                className="pointer-events-none absolute left-1/2 top-1/2 z-20 mt-10 -translate-x-1/2 whitespace-nowrap rounded-full border border-[#ff5a2a]/40 bg-black/60 px-3 py-1.5 backdrop-blur-md"
+                className="pointer-events-none absolute left-1/2 top-1/2 z-20 mt-10 -translate-x-1/2 whitespace-nowrap rounded-full border border-[#ff5a2a]/40 bg-black/75 px-3 py-1.5"
               >
                 <span className="flex items-center gap-1.5 font-mono text-xs font-bold text-[#ff9a5c]">
                   <ArrowBigUpDash className="h-4 w-4" /> NÂNG CẤP · {hoverAmmo}
@@ -1456,7 +1467,7 @@ export function HeroUniverse() {
           </AnimatePresence>
 
           {/* stats */}
-          <div className="absolute left-4 top-4 z-30 flex items-center gap-4 rounded-full border border-[#ff5a2a]/20 bg-black/50 px-4 py-2 text-white backdrop-blur-md">
+          <div className="absolute left-4 top-4 z-30 flex items-center gap-4 rounded-full border border-[#ff5a2a]/20 bg-black/70 px-4 py-2 text-white">
             <span className="font-mono text-sm"><span className="text-white/50">WAVE</span> <span className="font-bold text-[#ff9a5c]">{wave}</span></span>
             <span className="font-mono text-sm"><span className="text-white/50">SCORE</span> <span className="font-bold text-[#ff9a5c]">{score}</span></span>
             <span className="flex items-center gap-1">
@@ -1472,11 +1483,11 @@ export function HeroUniverse() {
               onClick={() => setMuted((m) => !m)}
               aria-label={muted ? "Bật tiếng" : "Tắt tiếng"}
               title={muted ? "Bật tiếng (M)" : "Tắt tiếng (M)"}
-              className="flex items-center rounded-full border border-[#ff5a2a]/20 bg-black/50 p-2 text-white/80 backdrop-blur-md transition-colors hover:bg-white/10"
+              className="flex items-center rounded-full border border-[#ff5a2a]/20 bg-black/70 p-2 text-white/80 transition-colors hover:bg-white/10"
             >
               {muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
             </button>
-            <button type="button" onClick={handleStop} className="flex items-center gap-1.5 rounded-full border border-[#ff5a2a]/20 bg-black/50 px-3 py-2 text-xs font-medium text-white/80 backdrop-blur-md transition-colors hover:bg-white/10">
+            <button type="button" onClick={handleStop} className="flex items-center gap-1.5 rounded-full border border-[#ff5a2a]/20 bg-black/70 px-3 py-2 text-xs font-medium text-white/80 transition-colors hover:bg-white/10">
               <X className="h-4 w-4" /> Exit
             </button>
           </div>
@@ -1498,7 +1509,7 @@ export function HeroUniverse() {
           {/* weapon + power */}
           {phase === "playing" && (
             <div className="absolute bottom-5 left-1/2 z-30 flex -translate-x-1/2 flex-col items-center gap-2">
-              <div className="flex items-center gap-3 rounded-full border border-[#ff5a2a]/20 bg-black/55 px-4 py-2 backdrop-blur-md">
+              <div className="flex items-center gap-3 rounded-full border border-[#ff5a2a]/20 bg-black/70 px-4 py-2">
                 <span className="font-mono text-xs font-bold tracking-wider text-[#ff9a5c]">{WEAPON_META[weapon].label}</span>
                 <span className="text-white/20">|</span>
                 <span className="font-mono text-xs text-white/50">PWR</span>
@@ -1509,7 +1520,7 @@ export function HeroUniverse() {
                 </span>
                 <span className="font-mono text-[11px] text-white/40">×{salvoOf(power)}</span>
               </div>
-              <span className="rounded-full bg-black/30 px-3 py-1 text-[11px] text-white/55 backdrop-blur-md">
+              <span className="rounded-full bg-black/50 px-3 py-1 text-[11px] text-white/55">
                 Di chuột để ngắm · Giữ Space để bắn · Thiên thạch cam vô hại — bắn hoặc bay vào để đổi đạn
               </span>
             </div>

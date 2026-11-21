@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const res = await fetch(url, {
-      next: { revalidate: 15 }
+      next: { revalidate: 10 }
     });
 
     if (!res.ok) {
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
       error: null
     }, {
       headers: {
-        'Cache-Control': 'public, s-maxage=15, stale-while-revalidate=30'
+        'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=30'
       }
     });
   } catch (error) {

@@ -101,17 +101,30 @@ export function SiteBackground() {
       raf = 0;
     };
     // Don't animate a background nobody is looking at.
-    const onVisibility = () => (document.hidden ? stop() : start());
+    // The hero is opaque and fills the first viewport, so skip drawing there.
+    let heroCovers = true;
+    const sync = () => (document.hidden || heroCovers ? stop() : start());
+    const onVisibility = sync;
+    const onScroll = () => {
+      const covers = window.scrollY < window.innerHeight * 0.9;
+      if (covers !== heroCovers) {
+        heroCovers = covers;
+        sync();
+      }
+    };
 
     resize();
     draw();
-    start();
+    onScroll();
+    sync();
 
     window.addEventListener("resize", resize);
+    window.addEventListener("scroll", onScroll, { passive: true });
     document.addEventListener("visibilitychange", onVisibility);
     return () => {
       stop();
       window.removeEventListener("resize", resize);
+      window.removeEventListener("scroll", onScroll);
       document.removeEventListener("visibilitychange", onVisibility);
     };
   }, []);
@@ -121,7 +134,7 @@ export function SiteBackground() {
       <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />
       {/* subtle film grain for depth (avoids the flat, generated look) */}
       <div
-        className="absolute inset-0 opacity-[0.035] mix-blend-overlay dark:opacity-[0.05]"
+        className="absolute inset-0 opacity-[0.03] dark:opacity-[0.045]"
         style={{
           backgroundImage:
             "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
@@ -129,8 +142,8 @@ export function SiteBackground() {
       />
       {/* depth vignette + soft brand glows */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,transparent_0%,var(--background)_85%)]" />
-      <div className="absolute -top-40 left-1/4 h-[36rem] w-[36rem] -translate-x-1/2 rounded-full bg-brand/[0.07] blur-[130px]" />
-      <div className="absolute bottom-0 right-1/4 h-[30rem] w-[30rem] translate-x-1/2 rounded-full bg-primary/[0.04] blur-[120px]" />
+      <div className="absolute -top-40 left-1/4 h-[36rem] w-[36rem] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,color-mix(in_oklch,var(--brand)_9%,transparent),transparent)]" />
+      <div className="absolute bottom-0 right-1/4 h-[30rem] w-[30rem] translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,color-mix(in_oklch,var(--primary)_5%,transparent),transparent)]" />
     </div>
   );
 }
